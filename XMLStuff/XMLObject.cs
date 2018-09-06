@@ -27,9 +27,13 @@ namespace XMLStuff
         ///
         /// If the file does not exists it will be created.
         /// </summary>
-        /// <param name="xmlfilename">The name of the XML File to load into the XMLObject.</param>
-        /// <param name="fallbackxmlcontent">The fallback content string to write
-        /// into the fallback XML File if the file does not exist or if the file is empty.</param>
+        /// <param name="xmlfilename">
+        /// The name of the XML File to load into the XMLObject.
+        /// </param>
+        /// <param name="fallbackxmlcontent">
+        /// The fallback content string to write into the fallback XML File
+        /// if the file does not exist or if the file is empty.
+        /// </param>
         public XMLObject(string xmlfilename, string fallbackxmlcontent)
             : this(xmlfilename, fallbackxmlcontent, false)
         {
@@ -41,9 +45,17 @@ namespace XMLStuff
         ///
         /// If the file does not exists it will be created.
         /// </summary>
-        /// <param name="xmlfilename">The name of the XML File to load into the XMLObject.</param>
-        /// <param name="fallbackxmlcontent">The fallback content string to write into the fallback XML File if the file does not exist or if the file is empty.</param>
-        /// <param name="saveToAppStartFolder">Controls weather to save the file to the xmlfilename param string if it is the full path or to the Application Startup Path if it supplies file name only.</param>
+        /// <param name="xmlfilename">
+        /// The name of the XML File to load into the XMLObject.
+        /// </param>
+        /// <param name="fallbackxmlcontent">
+        /// The fallback content string to write into the fallback XML File
+        /// if the file does not exist or if the file is empty.
+        /// </param>
+        /// <param name="saveToAppStartFolder">
+        /// Controls weather to save the file to the xmlfilename param string if
+        /// it is the full path or to the Application Startup Path if it supplies file name only.
+        /// </param>
         public XMLObject(string xmlfilename, string fallbackxmlcontent, bool saveToAppStartFolder)
         {
             this.ObjLock = new object();
@@ -131,7 +143,9 @@ namespace XMLStuff
                 outxmlData.Dispose();
 
                 // ensure file length is not 0.
-                if (this.Exists != (File.Exists(this.CachedXmlfilename) && Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
+                if (this.Exists != (
+                    File.Exists(this.CachedXmlfilename) &&
+                    Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
                 {
                     // refresh Exists so it always works.
                     this.Exists = File.Exists(this.CachedXmlfilename);
@@ -260,7 +274,11 @@ namespace XMLStuff
             {
                 var xMLElementData = new XMLElementData
                 {
-                    Attributes = this.ElementsAdded.ContainsKey(elementname) ? this.ElementsAdded[elementname].Attributes : (this.ElementsEdits.ContainsKey(elementname) ? this.ElementsEdits[elementname].Attributes : null),
+                    Attributes = this.ElementsAdded.ContainsKey(elementname)
+                        ? this.ElementsAdded[elementname].Attributes
+                        : (this.ElementsEdits.ContainsKey(elementname)
+                            ? this.ElementsEdits[elementname].Attributes
+                            : null),
                     Value = value,
                 };
                 if (this.ElementsAdded.ContainsKey(elementname))
@@ -371,15 +389,21 @@ namespace XMLStuff
             if (elem != null)
             {
                 // do not dare to look in _elements_deleted.
-                return elem != null ? elem.Value : (this.ElementsEdits.ContainsKey(elementname) ? this.ElementsEdits[elementname].Value : string.Empty);
+                return elem != null
+                    ? elem.Value
+                    : (this.ElementsEdits.ContainsKey(elementname)
+                        ? this.ElementsEdits[elementname].Value
+                        : string.Empty);
             }
             else
             {
                 this.Write(elementname, string.Empty);
-                var output = this.ElementsAdded.ContainsKey(elementname) ? this.ElementsAdded[elementname].Value : string.Empty;
+                var output = this.ElementsAdded.ContainsKey(elementname)
+                    ? this.ElementsAdded[elementname].Value : string.Empty;
 
                 // if elementwas added before but was edited.
-                output = (this.ElementsEdits.ContainsKey(elementname) && output == string.Empty) ? this.ElementsEdits[elementname].Value : output;
+                output = (this.ElementsEdits.ContainsKey(elementname) && output == string.Empty)
+                    ? this.ElementsEdits[elementname].Value : output;
                 return output;
             }
         }
