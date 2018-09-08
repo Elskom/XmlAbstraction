@@ -7,8 +7,8 @@
     <ProjectGuid>{EBD7DF91-1659-4F12-8120-D6966680E363}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XMLStuff</RootNamespace>
-    <AssemblyName>XMLStuff</AssemblyName>
+    <RootNamespace>XmlAbstraction</RootNamespace>
+    <AssemblyName>XmlAbstraction</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -21,9 +21,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>XMLStuff.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>XmlAbstraction.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\XMLStuff.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\XmlAbstraction.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,9 +32,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>XMLStuff.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>XmlAbstraction.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\XMLStuff.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\XmlAbstraction.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XMLObject.cs" />
+    <Compile Include="XmlObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers">
@@ -54,7 +54,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="XMLStuff.ruleset" />
+    <None Include="XmlAbstraction.ruleset" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

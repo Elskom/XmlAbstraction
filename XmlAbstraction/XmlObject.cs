@@ -1,8 +1,8 @@
-// <copyright file="XMLObject.cs" company="PlaceholderCompany">
+// <copyright file="XmlObject.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace XMLStuff
+namespace XmlAbstraction
 {
     using System;
     using System.Collections.Generic;
@@ -15,14 +15,14 @@ namespace XMLStuff
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
-    public sealed class XMLObject : IDisposable
+    public sealed partial class XmlObject : IDisposable
     {
         // TODO: Add functions to remove XML Entries and Attributes too.
         // TODO: Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
         // TODO: Add ways of adding, editing, and deleting elements within elements.
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XMLObject"/> class
+        /// Initializes a new instance of the <see cref="XmlObject"/> class
         /// for reading and/or writing.
         ///
         /// If the file does not exists it will be created.
@@ -34,13 +34,13 @@ namespace XMLStuff
         /// The fallback content string to write into the fallback XML File
         /// if the file does not exist or if the file is empty.
         /// </param>
-        public XMLObject(string xmlfilename, string fallbackxmlcontent)
+        public XmlObject(string xmlfilename, string fallbackxmlcontent)
             : this(xmlfilename, fallbackxmlcontent, false)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XMLObject"/> class
+        /// Initializes a new instance of the <see cref="XmlObject"/> class
         /// for reading and/or writing.
         ///
         /// If the file does not exists it will be created.
@@ -56,12 +56,12 @@ namespace XMLStuff
         /// Controls weather to save the file to the xmlfilename param string if
         /// it is the full path or to the Application Startup Path if it supplies file name only.
         /// </param>
-        public XMLObject(string xmlfilename, string fallbackxmlcontent, bool saveToAppStartFolder)
+        public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToAppStartFolder)
         {
             this.ObjLock = new object();
-            this.ElementsAdded = new Dictionary<string, XMLElementData>();
-            this.ElementsEdits = new Dictionary<string, XMLElementData>();
-            this.ElementAttributesDeleted = new Dictionary<string, XMLElementData>();
+            this.ElementsAdded = new Dictionary<string, XmlElementData>();
+            this.ElementsEdits = new Dictionary<string, XmlElementData>();
+            this.ElementAttributesDeleted = new Dictionary<string, XmlElementData>();
             this.ElementsDeleted = new List<string>();
             if (saveToAppStartFolder)
             {
@@ -101,7 +101,7 @@ namespace XMLStuff
         }
 
         /// <summary>
-        /// Gets a value indicating whether the XMLObject is disposed.
+        /// Gets a value indicating whether the <see cref="XmlObject"/> is disposed.
         /// </summary>
         public bool IsDisposed { get; private set; } = false;
 
@@ -112,14 +112,14 @@ namespace XMLStuff
         private string CachedXmlfilename { get; set; }
 
         // Pending XML Element Addictions (excluding only adding attributes to an already existing element).
-        private Dictionary<string, XMLElementData> ElementsAdded { get; set; }
+        private Dictionary<string, XmlElementData> ElementsAdded { get; set; }
 
         // Pending XML Element edits (any value edits, added attributes, or edited attributes).
-        private Dictionary<string, XMLElementData> ElementsEdits { get; set; }
+        private Dictionary<string, XmlElementData> ElementsEdits { get; set; }
 
         // Pending XML Element Attribute Deletions. If Element was made at runtime and not in the xml file,
         // remove it from the _elements_changed Dictionary instead.
-        private Dictionary<string, XMLElementData> ElementAttributesDeleted { get; set; }
+        private Dictionary<string, XmlElementData> ElementAttributesDeleted { get; set; }
 
         // Pending XML Element Deletions.
         private List<string> ElementsDeleted { get; set; }
@@ -183,7 +183,7 @@ namespace XMLStuff
         /// empty value as well as making the attribute as if the Element was
         /// pre-added before calling this function.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="elementname">The name of the element to add a attribute to.</param>
         /// <param name="attributename">The name of the attribute to add.</param>
         /// <param name="attributevalue">The value of the attribute.</param>
@@ -191,7 +191,7 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
@@ -202,18 +202,18 @@ namespace XMLStuff
 
             if (this.ElementsAdded.ContainsKey(elementname))
             {
-                var xMLAttributeData = new XMLAttributeData
+                var xMLAttributeData = new XmlAttributeData
                 {
                     AttributeName = attributename,
                     Value = attributevalue.ToString(),
                 };
                 var xmleldata = this.ElementsAdded[elementname];
-                xmleldata.Attributes = xmleldata.Attributes ?? new List<XMLAttributeData>();
+                xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
                 xmleldata.Attributes.Add(xMLAttributeData);
             }
             else if (this.ElementsEdits.ContainsKey(elementname))
             {
-                XMLAttributeData xMLAttributeData;
+                XmlAttributeData xMLAttributeData;
                 var edit = false;
                 var attributeIndex = 0;
                 var xmleldata = this.ElementsEdits[elementname];
@@ -226,12 +226,12 @@ namespace XMLStuff
                     }
                 }
 
-                xMLAttributeData = new XMLAttributeData
+                xMLAttributeData = new XmlAttributeData
                 {
                     AttributeName = attributename,
                     Value = attributevalue.ToString(),
                 };
-                xmleldata.Attributes = xmleldata.Attributes ?? new List<XMLAttributeData>();
+                xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
                 if (!edit && attributevalue != null)
                 {
                     xmleldata.Attributes.Add(xMLAttributeData);
@@ -259,20 +259,20 @@ namespace XMLStuff
         ///
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="elementname">The name of the element to write to or create.</param>
         /// <param name="value">The value for the element.</param>
         public void Write(string elementname, string value)
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
             if (elem != null || this.ElementsAdded.ContainsKey(elementname))
             {
-                var xMLElementData = new XMLElementData
+                var xMLElementData = new XmlElementData
                 {
                     Attributes = this.ElementsAdded.ContainsKey(elementname)
                         ? this.ElementsAdded[elementname].Attributes
@@ -313,7 +313,7 @@ namespace XMLStuff
         ///
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="elementname">
         /// The name of the element to create an attribute or set an
         /// attribute in or to create with the attribute.
@@ -324,7 +324,7 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
@@ -342,7 +342,7 @@ namespace XMLStuff
         ///
         /// If Elements do not exist yet they will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="parentelementname">parrent element name of the subelement.</param>
         /// <param name="elementname">The name to use when writing subelement(s).</param>
         /// <param name="values">The array of values to use for the subelement(s).</param>
@@ -350,7 +350,7 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(parentelementname);
@@ -375,14 +375,14 @@ namespace XMLStuff
         ///
         /// If Element does not exist yet it will be created automatically with an empty value.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string Read(string elementname)
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
@@ -414,7 +414,7 @@ namespace XMLStuff
         /// If Element and the attribute does not exist yet it will be created automatically
         /// with an empty value.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
@@ -422,7 +422,7 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
@@ -441,7 +441,7 @@ namespace XMLStuff
         /// If Parent Element does not exist yet it will be created automatically
         /// with an empty value. In that case an empty string array is returned.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
         /// <param name="unused">
@@ -455,7 +455,7 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Descendants(parentelementname);
@@ -477,7 +477,7 @@ namespace XMLStuff
         /// <summary>
         /// Deletes an xml element using the element name.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname does not exist in the xml or in pending edits.</exception>
         /// <param name="elementname">The element name of the element to delete.</param>
         public void Delete(string elementname)
@@ -489,7 +489,7 @@ namespace XMLStuff
         /// <summary>
         /// Removes an xml attribute using the element name and the name of the attribute.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname or attributename does not exist in the xml or in pending edits.</exception>
         /// <param name="elementname">The element name that has the attribute to delete.</param>
         /// <param name="attributename">The name of the attribute to delete.</param>
@@ -502,14 +502,14 @@ namespace XMLStuff
         /// <summary>
         /// Saves the underlying XML file if it changed.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">XMLOblect is disposed.</exception>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         public void Save()
         {
             lock (this.ObjLock)
             {
                 if (this.IsDisposed)
                 {
-                    throw new ObjectDisposedException(nameof(XMLObject));
+                    throw new ObjectDisposedException(nameof(XmlObject));
                 }
 
                 if (this.HasChangedExternally && this.Exists)
@@ -587,12 +587,12 @@ namespace XMLStuff
         }
 
         /// <summary>
-        /// Disposes of the XMLObject and saves the underlying XML file if it changed.
+        /// Disposes of the <see cref="XmlObject"/> and saves the underlying XML file if it changed.
         /// </summary>
         public void Dispose() => this.Dispose(true);
 
         // Summary:
-        //   Adds an Element to the XMLObject but verifies it does not exist first.
+        //   Adds an Element to the XmlObject but verifies it does not exist first.
         //
         // Exceptions:
         //   System.Exception:
@@ -603,13 +603,13 @@ namespace XMLStuff
         {
             if (this.IsDisposed)
             {
-                throw new ObjectDisposedException(nameof(XMLObject));
+                throw new ObjectDisposedException(nameof(XmlObject));
             }
 
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null || !this.ElementsAdded.ContainsKey(elementname))
             {
-                var xMLElementData = new XMLElementData
+                var xMLElementData = new XmlElementData
                 {
                     Attributes = null,
                     Value = value,
@@ -625,7 +625,7 @@ namespace XMLStuff
 
         // Summary:
         //   Writes Added subelements to the XML file.
-        private void SaveAddedSubelements(XElement xElement, XMLElementData elemdata)
+        private void SaveAddedSubelements(XElement xElement, XmlElementData elemdata)
         {
             if (elemdata.Name != string.Empty)
             {
@@ -673,20 +673,20 @@ namespace XMLStuff
             }
         }
 
-        private class XMLElementData
+        private class XmlAttributeData
         {
-            internal string Name { get; set; } = string.Empty;
-
-            internal XMLElementData[] Subelements { get; set; } = null;
-
-            internal List<XMLAttributeData> Attributes { get; set; } = new List<XMLAttributeData>();
+            internal string AttributeName { get; set; } = string.Empty;
 
             internal string Value { get; set; } = string.Empty;
         }
 
-        private class XMLAttributeData
+        private class XmlElementData
         {
-            internal string AttributeName { get; set; } = string.Empty;
+            internal string Name { get; set; } = string.Empty;
+
+            internal XmlElementData[] Subelements { get; set; } = null;
+
+            internal List<XmlAttributeData> Attributes { get; set; } = new List<XmlAttributeData>();
 
             internal string Value { get; set; } = string.Empty;
         }
