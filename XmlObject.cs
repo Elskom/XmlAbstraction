@@ -15,7 +15,7 @@ namespace XmlAbstraction
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
-    public sealed partial class XmlObject : IDisposable
+    public class XmlObject : IDisposable
     {
         // TODO: Add functions to remove XML Entries and Attributes too.
         // TODO: Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
