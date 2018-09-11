@@ -184,6 +184,7 @@ namespace XmlAbstraction
         /// pre-added before calling this function.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="Exception">Attribute already exists.</exception>
         /// <param name="elementname">The name of the element to add a attribute to.</param>
         /// <param name="attributename">The name of the attribute to add.</param>
         /// <param name="attributevalue">The value of the attribute.</param>
@@ -202,14 +203,27 @@ namespace XmlAbstraction
 
             if (this.ElementsAdded.ContainsKey(elementname))
             {
-                var xMLAttributeData = new XmlAttributeData
-                {
-                    AttributeName = attributename,
-                    Value = attributevalue.ToString(),
-                };
                 var xmleldata = this.ElementsAdded[elementname];
-                xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                xmleldata.Attributes.Add(xMLAttributeData);
+                var found = false;
+                foreach (var attribute in xmleldata.Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename))
+                    {
+                        found = true;
+                        attribute.AttributeName = attributevalue.ToString();
+                    }
+                }
+
+                if (found)
+                {
+                    var xMLAttributeData = new XmlAttributeData
+                    {
+                        AttributeName = attributename,
+                        Value = attributevalue.ToString(),
+                    };
+                    xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
+                    xmleldata.Attributes.Add(xMLAttributeData);
+                }
             }
             else if (this.ElementsEdits.ContainsKey(elementname))
             {
@@ -244,9 +258,16 @@ namespace XmlAbstraction
             }
             else
             {
-                // TODO: get if attribute is in document, if it is this determins
                 if (attributevalue != null)
                 {
+                    if (elem.Attribute(attributename) != null)
+                    {
+                        throw new Exception("Attribute already exists.");
+                    }
+                    else
+                    {
+                        // TODO: Add element to pending ElementsEdits dictionary.
+                    }
                 }
             }
 

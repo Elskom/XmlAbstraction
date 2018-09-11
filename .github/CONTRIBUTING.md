@@ -1,6 +1,6 @@
 # Contributing
 
-1. Before you open an issue read the [Code of Conduct](CODE_OF_CONDUCT.md) first.
+1. Before you open an issue read the [Code of Conduct](../CODE_OF_CONDUCT.md) first.
 This details what the expected behavior should be.
 2. Ensure the issue or pull request was not already suggested.
 However if the pull request needed reopened due to some issues in it it would be detailed.
