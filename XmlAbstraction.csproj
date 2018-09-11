@@ -49,6 +49,11 @@
     <Compile Include="XmlObject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="NuGet.CommandLine">
+      <Version>4.7.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers">
       <Version>1.1.0-beta009</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

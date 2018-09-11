@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>XmlAbstraction</title>
+    <authors>AraHaan</authors>
+    <owners>AraHaan</owners>
+    <licenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/AraHaan/XmlAbstraction/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>XML</tags>
+  </metadata>
+</package>
