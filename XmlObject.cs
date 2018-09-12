@@ -12,6 +12,9 @@ namespace XmlAbstraction
     using System.Windows.Forms;
     using System.Xml.Linq;
 
+    // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
+    // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
+    // method if the xml is not read-only. I did this to support read only memory access of xml.
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
@@ -20,6 +23,18 @@ namespace XmlAbstraction
         // TODO: Add functions to remove XML Entries and Attributes too.
         // TODO: Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
         // TODO: Add ways of adding, editing, and deleting elements within elements.
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmlObject"/> class
+        /// for reading xml data from memory.
+        /// 
+        /// With this contstructor, the <see cref="XmlObject"/> returned will be read-only.
+        /// </summary>
+        /// <param name="xmlcontent">The xml data to load into memory.</param>
+        public XmlObject(string xmlcontent)
+            : this(":memory", xmlcontent)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlObject"/> class
@@ -78,23 +93,26 @@ namespace XmlAbstraction
                 fallbackxmlcontent = fallbackxmlcontent.Insert(0, "<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
             }
 
-            this.CachedXmlfilename = xmlfilename;
-            this.Exists = File.Exists(xmlfilename);
-            this.HasChanged = !this.Exists;
             long fileSize = 0;
-            if (this.Exists)
+            this.CachedXmlfilename = xmlfilename;
+            if (!xmlfilename.Equals(":memory"))
             {
-                FileInfo fileinfo = null;
-                try
+                this.Exists = File.Exists(xmlfilename);
+                this.HasChanged = !this.Exists;
+                if (this.Exists)
                 {
-                    fileinfo = new FileInfo(xmlfilename);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                    FileInfo fileinfo = null;
+                    try
+                    {
+                        fileinfo = new FileInfo(xmlfilename);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
 
-                fileSize = fileinfo.Length;
+                    fileSize = fileinfo.Length;
+                }
             }
 
             this.Doc = (fileSize > 0) ? XDocument.Load(xmlfilename) : XDocument.Parse(fallbackxmlcontent);
@@ -137,24 +155,29 @@ namespace XmlAbstraction
         {
             get
             {
-                var outxmlData = new MemoryStream();
-                this.Doc.Save(outxmlData);
-                var outXmlBytes = outxmlData.ToArray();
-                outxmlData.Dispose();
-
-                // ensure file length is not 0.
-                if (this.Exists != (
-                    File.Exists(this.CachedXmlfilename) &&
-                    Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
+                if (!this.CachedXmlfilename.Equals(":memory"))
                 {
-                    // refresh Exists so it always works.
-                    this.Exists = File.Exists(this.CachedXmlfilename);
+                    var outxmlData = new MemoryStream();
+                    this.Doc.Save(outxmlData);
+                    var outXmlBytes = outxmlData.ToArray();
+                    outxmlData.Dispose();
+
+                    // ensure file length is not 0.
+                    if (this.Exists != (
+                        File.Exists(this.CachedXmlfilename) &&
+                        Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
+                    {
+                        // refresh Exists so it always works.
+                        this.Exists = File.Exists(this.CachedXmlfilename);
+                    }
+
+                    var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
+
+                    // cannot change externally if it does not exist on file yet.
+                    return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
                 }
-
-                var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
-
-                // cannot change externally if it does not exist on file yet.
-                return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
+                // this must return false when in memory (read-only) state.
+                return false;
             }
         }
 
@@ -185,6 +208,7 @@ namespace XmlAbstraction
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="Exception">Attribute already exists.</exception>
+        /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">The name of the element to add a attribute to.</param>
         /// <param name="attributename">The name of the attribute to add.</param>
         /// <param name="attributevalue">The value of the attribute.</param>
@@ -195,83 +219,90 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem == null)
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                this.Write(elementname, null);
-            }
-
-            if (this.ElementsAdded.ContainsKey(elementname))
-            {
-                var xmleldata = this.ElementsAdded[elementname];
-                var found = false;
-                foreach (var attribute in xmleldata.Attributes)
+                var elem = this.Doc.Root.Element(elementname);
+                if (elem == null)
                 {
-                    if (attribute.AttributeName.Equals(attributename))
-                    {
-                        found = true;
-                        attribute.AttributeName = attributevalue.ToString();
-                    }
+                    this.Write(elementname, null);
                 }
 
-                if (found)
+                if (this.ElementsAdded.ContainsKey(elementname))
                 {
-                    var xMLAttributeData = new XmlAttributeData
+                    var xmleldata = this.ElementsAdded[elementname];
+                    var found = false;
+                    foreach (var attribute in xmleldata.Attributes)
+                    {
+                        if (attribute.AttributeName.Equals(attributename))
+                        {
+                            found = true;
+                            attribute.AttributeName = attributevalue.ToString();
+                        }
+                    }
+
+                    if (found)
+                    {
+                        var xMLAttributeData = new XmlAttributeData
+                        {
+                            AttributeName = attributename,
+                            Value = attributevalue.ToString(),
+                        };
+                        xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
+                        xmleldata.Attributes.Add(xMLAttributeData);
+                    }
+                }
+                else if (this.ElementsEdits.ContainsKey(elementname))
+                {
+                    XmlAttributeData xMLAttributeData;
+                    var edit = false;
+                    var attributeIndex = 0;
+                    var xmleldata = this.ElementsEdits[elementname];
+                    foreach (var attribute in xmleldata.Attributes)
+                    {
+                        if (attribute.AttributeName.Equals(attributename))
+                        {
+                            edit = true;
+                            attributeIndex = xmleldata.Attributes.IndexOf(attribute);
+                        }
+                    }
+
+                    xMLAttributeData = new XmlAttributeData
                     {
                         AttributeName = attributename,
                         Value = attributevalue.ToString(),
                     };
                     xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                    xmleldata.Attributes.Add(xMLAttributeData);
-                }
-            }
-            else if (this.ElementsEdits.ContainsKey(elementname))
-            {
-                XmlAttributeData xMLAttributeData;
-                var edit = false;
-                var attributeIndex = 0;
-                var xmleldata = this.ElementsEdits[elementname];
-                foreach (var attribute in xmleldata.Attributes)
-                {
-                    if (attribute.AttributeName.Equals(attributename))
+                    if (!edit && attributevalue != null)
                     {
-                        edit = true;
-                        attributeIndex = xmleldata.Attributes.IndexOf(attribute);
-                    }
-                }
-
-                xMLAttributeData = new XmlAttributeData
-                {
-                    AttributeName = attributename,
-                    Value = attributevalue.ToString(),
-                };
-                xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                if (!edit && attributevalue != null)
-                {
-                    xmleldata.Attributes.Add(xMLAttributeData);
-                }
-                else
-                {
-                    xMLAttributeData = xmleldata.Attributes[attributeIndex];
-                    xMLAttributeData.Value = attributevalue.ToString();
-                }
-            }
-            else
-            {
-                if (attributevalue != null)
-                {
-                    if (elem.Attribute(attributename) != null)
-                    {
-                        throw new Exception("Attribute already exists.");
+                        xmleldata.Attributes.Add(xMLAttributeData);
                     }
                     else
                     {
-                        // TODO: Add element to pending ElementsEdits dictionary.
+                        xMLAttributeData = xmleldata.Attributes[attributeIndex];
+                        xMLAttributeData.Value = attributevalue.ToString();
                     }
                 }
-            }
+                else
+                {
+                    if (attributevalue != null)
+                    {
+                        if (elem.Attribute(attributename) != null)
+                        {
+                            throw new Exception("Attribute already exists.");
+                        }
+                        else
+                        {
+                            // TODO: Add element to pending ElementsEdits dictionary.
+                        }
+                    }
+                }
 
-            this.HasChanged = true;
+                this.HasChanged = true;
+            }
+            else
+            {
+                throw new InvalidOperationException("This instance is read-only.");
+            }
         }
 
         /// <summary>
@@ -281,6 +312,7 @@ namespace XmlAbstraction
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">The name of the element to write to or create.</param>
         /// <param name="value">The value for the element.</param>
         public void Write(string elementname, string value)
@@ -290,41 +322,48 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem != null || this.ElementsAdded.ContainsKey(elementname))
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                var xMLElementData = new XmlElementData
+                var elem = this.Doc.Root.Element(elementname);
+                if (elem != null || this.ElementsAdded.ContainsKey(elementname))
                 {
-                    Attributes = this.ElementsAdded.ContainsKey(elementname)
-                        ? this.ElementsAdded[elementname].Attributes
-                        : (this.ElementsEdits.ContainsKey(elementname)
-                            ? this.ElementsEdits[elementname].Attributes
-                            : null),
-                    Value = value,
-                };
-                if (this.ElementsAdded.ContainsKey(elementname))
-                {
-                    // modify this key, do not put into _elements_edits dictonary.
-                    this.ElementsAdded[elementname] = xMLElementData;
-                }
-                else
-                {
-                    if (this.ElementsEdits.ContainsKey(elementname))
+                    var xMLElementData = new XmlElementData
                     {
-                        // edit the collection whenever this changes.
-                        this.ElementsEdits[elementname] = xMLElementData;
+                        Attributes = this.ElementsAdded.ContainsKey(elementname)
+                            ? this.ElementsAdded[elementname].Attributes
+                            : (this.ElementsEdits.ContainsKey(elementname)
+                                ? this.ElementsEdits[elementname].Attributes
+                                : null),
+                        Value = value,
+                    };
+                    if (this.ElementsAdded.ContainsKey(elementname))
+                    {
+                        // modify this key, do not put into _elements_edits dictonary.
+                        this.ElementsAdded[elementname] = xMLElementData;
                     }
                     else
                     {
-                        this.ElementsEdits.Add(elementname, xMLElementData);
+                        if (this.ElementsEdits.ContainsKey(elementname))
+                        {
+                            // edit the collection whenever this changes.
+                            this.ElementsEdits[elementname] = xMLElementData;
+                        }
+                        else
+                        {
+                            this.ElementsEdits.Add(elementname, xMLElementData);
+                        }
                     }
-                }
 
-                this.HasChanged = true;
+                    this.HasChanged = true;
+                }
+                else
+                {
+                    this.AddElement(elementname, value);
+                }
             }
             else
             {
-                this.AddElement(elementname, value);
+                throw new InvalidOperationException("This instance is read-only.");
             }
         }
 
@@ -335,6 +374,7 @@ namespace XmlAbstraction
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">
         /// The name of the element to create an attribute or set an
         /// attribute in or to create with the attribute.
@@ -348,12 +388,19 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem != null || this.ElementsAdded.ContainsKey(elementname))
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
+                var elem = this.Doc.Root.Element(elementname);
+                if (elem != null || this.ElementsAdded.ContainsKey(elementname))
+                {
+                }
+                else
+                {
+                }
             }
             else
             {
+                throw new InvalidOperationException("This instance is read-only.");
             }
         }
 
@@ -364,6 +411,7 @@ namespace XmlAbstraction
         /// If Elements do not exist yet they will be created automatically.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="parentelementname">parrent element name of the subelement.</param>
         /// <param name="elementname">The name to use when writing subelement(s).</param>
         /// <param name="values">The array of values to use for the subelement(s).</param>
@@ -374,20 +422,27 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Root.Element(parentelementname);
-            if (elem == null)
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                this.Write(parentelementname, string.Empty);
-            }
+                var elem = this.Doc.Root.Element(parentelementname);
+                if (elem == null)
+                {
+                    this.Write(parentelementname, string.Empty);
+                }
 
-            var elem2 = this.Doc.Descendants(parentelementname);
-            if (elem2 == XElement.EmptySequence)
-            {
-                // TODO: Add Subelements to pending changes list.
+                var elem2 = this.Doc.Descendants(parentelementname);
+                if (elem2 == XElement.EmptySequence)
+                {
+                    // TODO: Add Subelements to pending changes list.
+                }
+                else if (elem2 != XElement.EmptySequence || this.ElementsAdded.ContainsKey(elementname))
+                {
+                    // TODO: Add edited Subelements to pending changes list. Then on save overwrite the whole collection with the pending data from here.
+                }
             }
-            else if (elem2 != XElement.EmptySequence || this.ElementsAdded.ContainsKey(elementname))
+            else
             {
-                // TODO: Add edited Subelements to pending changes list. Then on save overwrite the whole collection with the pending data from here.
+                throw new InvalidOperationException("This instance is read-only.");
             }
         }
 
@@ -397,6 +452,7 @@ namespace XmlAbstraction
         /// If Element does not exist yet it will be created automatically with an empty value.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string Read(string elementname)
@@ -436,6 +492,7 @@ namespace XmlAbstraction
         /// with an empty value.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
@@ -463,6 +520,7 @@ namespace XmlAbstraction
         /// with an empty value. In that case an empty string array is returned.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
         /// <param name="unused">
@@ -500,11 +558,24 @@ namespace XmlAbstraction
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname does not exist in the xml or in pending edits.</exception>
+        /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name of the element to delete.</param>
         public void Delete(string elementname)
         {
-            // before deleting the node (if it exists in xml), check if in any
-            // of the dictionaries then add it to the dictionary for deleting values.
+            if (this.IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(XmlObject));
+            }
+
+            if (!this.CachedXmlfilename.Equals(":memory"))
+            {
+                // before deleting the node (if it exists in xml), check if in any
+                // of the dictionaries then add it to the dictionary for deleting values.
+            }
+            else
+            {
+                throw new InvalidOperationException("This instance is read-only.");
+            }
         }
 
         /// <summary>
@@ -512,12 +583,25 @@ namespace XmlAbstraction
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname or attributename does not exist in the xml or in pending edits.</exception>
+        /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name that has the attribute to delete.</param>
         /// <param name="attributename">The name of the attribute to delete.</param>
         public void Delete(string elementname, string attributename)
         {
-            // before deleting the attribute (if it exists in xml), check if in any
-            // of the dictionaries then add it to the dictionary for deleting values.
+            if (this.IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(XmlObject));
+            }
+
+            if (!this.CachedXmlfilename.Equals(":memory"))
+            {
+                // before deleting the attribute (if it exists in xml), check if in any
+                // of the dictionaries then add it to the dictionary for deleting values.
+            }
+            else
+            {
+                throw new InvalidOperationException("This instance is read-only.");
+            }
         }
 
         /// <summary>
@@ -526,83 +610,87 @@ namespace XmlAbstraction
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         public void Save()
         {
-            lock (this.ObjLock)
+            // do not save in memory xml. It should be read only.
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                if (this.IsDisposed)
+                lock (this.ObjLock)
                 {
-                    throw new ObjectDisposedException(nameof(XmlObject));
-                }
-
-                if (this.HasChangedExternally && this.Exists)
-                {
-                    // reopen file to apply changes at runtime to it.
-                    this.Doc = XDocument.Load(this.CachedXmlfilename);
-                }
-
-                if (this.HasChanged)
-                {
-                    foreach (var added_elements in this.ElementsAdded)
+                    if (this.IsDisposed)
                     {
-                        // add elements to doc.
-                        this.Doc.Root.Add(new XElement(added_elements.Key, added_elements.Value.Value));
-                        if (added_elements.Value.Attributes != null)
+                        throw new ObjectDisposedException(nameof(XmlObject));
+                    }
+
+                    if (this.HasChangedExternally && this.Exists)
+                    {
+                        // reopen file to apply changes at runtime to it.
+                        this.Doc = XDocument.Load(this.CachedXmlfilename);
+                    }
+
+                    if (this.HasChanged)
+                    {
+                        foreach (var added_elements in this.ElementsAdded)
                         {
-                            // add attributes added to this element.
-                            var elem = this.Doc.Root.Element(added_elements.Key);
-                            foreach (var attributes in added_elements.Value.Attributes)
+                            // add elements to doc.
+                            this.Doc.Root.Add(new XElement(added_elements.Key, added_elements.Value.Value));
+                            if (added_elements.Value.Attributes != null)
+                            {
+                                // add attributes added to this element.
+                                var elem = this.Doc.Root.Element(added_elements.Key);
+                                foreach (var attributes in added_elements.Value.Attributes)
+                                {
+                                    elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
+                                }
+
+                                // add subelements and their attributes.
+                                foreach (var element in added_elements.Value.Subelements)
+                                {
+                                    this.SaveAddedSubelements(elem, element);
+                                }
+                            }
+                        }
+
+                        foreach (var edited_elements in this.ElementsEdits)
+                        {
+                            var elem = this.Doc.Root.Element(edited_elements.Key);
+                            elem.Value = edited_elements.Value.Value;
+                            if (edited_elements.Value.Attributes != null)
+                            {
+                                // add/edit attributes added/edited to this element.
+                                foreach (var attributes in edited_elements.Value.Attributes)
+                                {
+                                    elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
+                                }
+                            }
+                        }
+
+                        foreach (var attributes_deleted in this.ElementAttributesDeleted)
+                        {
+                            var elem = this.Doc.Root.Element(attributes_deleted.Key);
+
+                            // remove attributes on to this element.
+                            foreach (var attributes in attributes_deleted.Value.Attributes)
                             {
                                 elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
                             }
-
-                            // add subelements and their attributes.
-                            foreach (var element in added_elements.Value.Subelements)
-                            {
-                                this.SaveAddedSubelements(elem, element);
-                            }
                         }
-                    }
 
-                    foreach (var edited_elements in this.ElementsEdits)
-                    {
-                        var elem = this.Doc.Root.Element(edited_elements.Key);
-                        elem.Value = edited_elements.Value.Value;
-                        if (edited_elements.Value.Attributes != null)
+                        // hopefully this actually deletes the elements stored in this list.
+                        foreach (var deleted_elements in this.ElementsDeleted)
                         {
-                            // add/edit attributes added/edited to this element.
-                            foreach (var attributes in edited_elements.Value.Attributes)
-                            {
-                                elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
-                            }
+                            var elem = this.Doc.Root.Element(deleted_elements);
+                            elem.Remove();
                         }
+
+                        // apply changes.
+                        this.Doc.Save(this.CachedXmlfilename);
+                        this.ElementsAdded.Clear();
+                        this.ElementsEdits.Clear();
+                        this.ElementAttributesDeleted.Clear();
+                        this.ElementsDeleted.Clear();
+
+                        // avoid unneeded writes if nothing changed after this.
+                        this.HasChanged = false;
                     }
-
-                    foreach (var attributes_deleted in this.ElementAttributesDeleted)
-                    {
-                        var elem = this.Doc.Root.Element(attributes_deleted.Key);
-
-                        // remove attributes on to this element.
-                        foreach (var attributes in attributes_deleted.Value.Attributes)
-                        {
-                            elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
-                        }
-                    }
-
-                    // hopefully this actually deletes the elements stored in this list.
-                    foreach (var deleted_elements in this.ElementsDeleted)
-                    {
-                        var elem = this.Doc.Root.Element(deleted_elements);
-                        elem.Remove();
-                    }
-
-                    // apply changes.
-                    this.Doc.Save(this.CachedXmlfilename);
-                    this.ElementsAdded.Clear();
-                    this.ElementsEdits.Clear();
-                    this.ElementAttributesDeleted.Clear();
-                    this.ElementsDeleted.Clear();
-
-                    // avoid unneeded writes if nothing changed after this.
-                    this.HasChanged = false;
                 }
             }
         }
