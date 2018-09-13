@@ -82,13 +82,13 @@
             var xmlObj = new XmlObject(testXml);
 
             // test to make sure that InvalidOperationException is thrown.
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.AddAttribute("test", "test", "test"));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.AddAttribute("test4", "test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test", new string[] { "test1", "test2", "test3" }));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test", new string[] { "test1", "test2", "test3" }));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test", "test", null));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test2", "test"));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test3", "test", null));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
 
             // reopen data from a file.
@@ -101,14 +101,17 @@
             xmlObj = new XmlObject(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml",
                 testXml);
-            NoThrows(() => xmlObj.AddAttribute("test", "test", "test"));
+            NoThrows(() => xmlObj.AddAttribute("test4", "test", "test"));
             NoThrows(() => xmlObj.Write("test", "test"));
-            NoThrows(() => xmlObj.Write("test", "test", "test"));
-            NoThrows(() => xmlObj.Write("test", "test", new string[] { "test1", "test2", "test3" }));
+            NoThrows(() => xmlObj.Write("test2", "test", "test"));
+            NoThrows(() => xmlObj.Write("test3", "test", new string[] { "test1", "test2", "test3" }));
             NoThrows(() => xmlObj.Read("test"));
-            NoThrows(() => xmlObj.Read("test", "test"));
-            NoThrows(() => xmlObj.Read("test", "test", null));
+            NoThrows(() => xmlObj.Read("test2", "test"));
+            NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.ReopenFile());
+            NoThrows(() => xmlObj.Read("test"));
+            NoThrows(() => xmlObj.Read("test2", "test"));
+            NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.Save());
             xmlObj.Dispose();
             File.Delete(
