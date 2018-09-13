@@ -7,27 +7,15 @@
 
     public class XmlObjectUnitTest
     {
-        private static void Throws(ref XmlObject xmlObj)
+        private static void NoThrows(Action expression)
         {
             try
             {
-                xmlObj.ReopenFile();
-                throw new Exception("Method did not throw.");
+                expression();
             }
             catch (InvalidOperationException)
             {
-            }
-        }
-
-        private static void NoThrows(ref XmlObject xmlObj)
-        {
-            try
-            {
-                xmlObj.ReopenFile();
-            }
-            catch (InvalidOperationException)
-            {
-                throw new Exception("Method threw an exception.");
+                throw new Exception("Expression threw an exception.");
             }
         }
 
@@ -38,7 +26,7 @@
 <test>
 </test>";
             var xmlObj = new XmlObject(testXml);
-            Throws(ref xmlObj);
+            Assert.ThrowsAny<Exception>(() => xmlObj.ReopenFile());
             var fstrm = File.Create(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
             fstrm.Write(Encoding.UTF8.GetBytes(testXml), 0, testXml.Length);
@@ -47,7 +35,7 @@
             xmlObj = new XmlObject(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml",
                 testXml);
-            NoThrows(ref xmlObj);
+            NoThrows(() => xmlObj.ReopenFile());
             xmlObj.Dispose();
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
