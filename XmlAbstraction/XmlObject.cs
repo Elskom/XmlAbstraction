@@ -6,7 +6,6 @@ namespace XmlAbstraction
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -195,9 +194,15 @@ namespace XmlAbstraction
         /// but only if it has changed. If the file was not saved it
         /// will be saved first.
         /// </summary>
+        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">Cannot reopen on read-only instances.</exception>
         public void ReopenFile()
         {
+            if (this.IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(XmlObject));
+            }
+
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 this.Save();
@@ -243,12 +248,15 @@ namespace XmlAbstraction
                 {
                     var xmleldata = this.ElementsAdded[elementname];
                     var found = false;
-                    foreach (var attribute in xmleldata.Attributes)
+                    if (xmleldata.Attributes != null)
                     {
-                        if (attribute.AttributeName.Equals(attributename))
+                        foreach (var attribute in xmleldata.Attributes)
                         {
-                            found = true;
-                            attribute.AttributeName = attributevalue.ToString();
+                            if (attribute.AttributeName.Equals(attributename))
+                            {
+                                found = true;
+                                attribute.AttributeName = attributevalue.ToString();
+                            }
                         }
                     }
 
@@ -549,20 +557,25 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Descendants(parentelementname);
-            var strarray = new string[] { };
-            foreach (var element in elem)
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                strarray = element.Elements(elementname).Select(
-                    y => (string)y).ToArray();
+                var elem = this.Doc.Descendants(parentelementname);
+                var strarray = new string[] { };
+                foreach (var element in elem)
+                {
+                    strarray = element.Elements(elementname).Select(
+                        y => (string)y).ToArray();
+                }
+
+                if (elem == XElement.EmptySequence)
+                {
+                    this.Write(parentelementname, string.Empty);
+                }
+
+                return strarray;
             }
 
-            if (elem == XElement.EmptySequence)
-            {
-                this.Write(parentelementname, string.Empty);
-            }
-
-            return strarray;
+            throw new InvalidOperationException("This instance is read-only.");
         }
 
         /// <summary>
@@ -802,7 +815,7 @@ namespace XmlAbstraction
                 {
                     if (startupPath == null)
                     {
-                        StringBuilder sb = UnsafeNativeMethods.GetModuleFileNameLongPath(nullHandleRef);
+                        var sb = UnsafeNativeMethods.GetModuleFileNameLongPath(nullHandleRef);
                         startupPath = Path.GetDirectoryName(sb.ToString());
                     }
 
@@ -819,9 +832,9 @@ namespace XmlAbstraction
 
                 public static StringBuilder GetModuleFileNameLongPath(HandleRef hModule)
                 {
-                    StringBuilder buffer = new StringBuilder(260);
-                    int noOfTimes = 1;
-                    int length = 0;
+                    var buffer = new StringBuilder(260);
+                    var noOfTimes = 1;
+                    var length = 0;
 
                     // Iterating by allocating chunk of memory each time we find the length is not sufficient.
                     // Performance should not be an issue for current MAX_PATH length due to this change.
@@ -830,7 +843,7 @@ namespace XmlAbstraction
                         && buffer.Capacity < short.MaxValue)
                     {
                         noOfTimes += 2; // Increasing buffer size by 520 in each iteration.
-                        int capacity = noOfTimes * 260 < short.MaxValue ? noOfTimes * 260 : short.MaxValue;
+                        var capacity = noOfTimes * 260 < short.MaxValue ? noOfTimes * 260 : short.MaxValue;
                         buffer.EnsureCapacity(capacity);
                     }
 
