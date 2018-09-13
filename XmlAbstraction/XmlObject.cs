@@ -772,11 +772,7 @@ namespace XmlAbstraction
         {
             if (!this.IsDisposed)
             {
-                if (disposing)
-                {
-                    this.Save();
-                }
-
+                this.Save();
                 this.Exists = false;
                 this.HasChanged = false;
 

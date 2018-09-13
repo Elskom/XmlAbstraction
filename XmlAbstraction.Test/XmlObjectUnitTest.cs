@@ -52,5 +52,16 @@
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
         }
+
+        [Fact]
+        public void TestClassDoubleDispose()
+        {
+            var testXml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<test>
+</test>";
+            var xmlObj = new XmlObject(testXml);
+            xmlObj.Dispose();
+            xmlObj.Dispose();
+        }
     }
 }
