@@ -191,10 +191,18 @@ namespace XmlAbstraction
         /// but only if it has changed. If the file was not saved it
         /// will be saved first.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Cannot reopen on read-only instances.</exception>
         public void ReopenFile()
         {
-            this.Save();
-            this.Doc = XDocument.Load(this.CachedXmlfilename);
+            if (!this.CachedXmlfilename.Equals(":memory"))
+            {
+                this.Save();
+                this.Doc = XDocument.Load(this.CachedXmlfilename);
+            }
+            else
+            {
+                throw new InvalidOperationException("This instance is read-only.");
+            }
         }
 
         /// <summary>
