@@ -248,12 +248,15 @@ namespace XmlAbstraction
                 {
                     var xmleldata = this.ElementsAdded[elementname];
                     var found = false;
-                    foreach (var attribute in xmleldata.Attributes)
+                    if (xmleldata.Attributes != null)
                     {
-                        if (attribute.AttributeName.Equals(attributename))
+                        foreach (var attribute in xmleldata.Attributes)
                         {
-                            found = true;
-                            attribute.AttributeName = attributevalue.ToString();
+                            if (attribute.AttributeName.Equals(attributename))
+                            {
+                                found = true;
+                                attribute.AttributeName = attributevalue.ToString();
+                            }
                         }
                     }
 
@@ -554,20 +557,25 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            var elem = this.Doc.Descendants(parentelementname);
-            var strarray = new string[] { };
-            foreach (var element in elem)
+            if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                strarray = element.Elements(elementname).Select(
-                    y => (string)y).ToArray();
+                var elem = this.Doc.Descendants(parentelementname);
+                var strarray = new string[] { };
+                foreach (var element in elem)
+                {
+                    strarray = element.Elements(elementname).Select(
+                        y => (string)y).ToArray();
+                }
+
+                if (elem == XElement.EmptySequence)
+                {
+                    this.Write(parentelementname, string.Empty);
+                }
+
+                return strarray;
             }
 
-            if (elem == XElement.EmptySequence)
-            {
-                this.Write(parentelementname, string.Empty);
-            }
-
-            return strarray;
+            throw new InvalidOperationException("This instance is read-only.");
         }
 
         /// <summary>
