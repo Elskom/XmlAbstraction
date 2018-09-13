@@ -64,7 +64,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XmlAbstraction.csproj">
+    <ProjectReference Include="..\XmlAbstraction\XmlAbstraction.csproj">
       <Project>{ebd7df91-1659-4f12-8120-d6966680e363}</Project>
       <Name>XmlAbstraction</Name>
     </ProjectReference>

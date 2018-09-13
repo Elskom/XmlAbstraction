@@ -14,7 +14,7 @@ comment:
 flags:
   production:
     paths:
-      - .
+      - XmlAbstraction/
   test:
     paths:
       - XmlAbstraction.Test/

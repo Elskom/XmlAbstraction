@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28016.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlAbstraction", "XmlAbstraction.csproj", "{EBD7DF91-1659-4F12-8120-D6966680E363}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlAbstraction", "XmlAbstraction\XmlAbstraction.csproj", "{EBD7DF91-1659-4F12-8120-D6966680E363}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlAbstraction.Test", "XmlAbstraction.Test\XmlAbstraction.Test.csproj", "{E4409179-F366-4688-A2B9-EC29A9EBA944}"
 EndProject
