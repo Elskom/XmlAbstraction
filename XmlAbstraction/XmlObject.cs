@@ -557,25 +557,20 @@ namespace XmlAbstraction
                 throw new ObjectDisposedException(nameof(XmlObject));
             }
 
-            if (!this.CachedXmlfilename.Equals(":memory"))
+            var elem = this.Doc.Descendants(parentelementname);
+            var strarray = new string[] { };
+            foreach (var element in elem)
             {
-                var elem = this.Doc.Descendants(parentelementname);
-                var strarray = new string[] { };
-                foreach (var element in elem)
-                {
-                    strarray = element.Elements(elementname).Select(
-                        y => (string)y).ToArray();
-                }
-
-                if (elem == XElement.EmptySequence)
-                {
-                    this.Write(parentelementname, string.Empty);
-                }
-
-                return strarray;
+                strarray = element.Elements(elementname).Select(
+                    y => (string)y).ToArray();
             }
 
-            throw new InvalidOperationException("This instance is read-only.");
+            if (elem == XElement.EmptySequence)
+            {
+                this.Write(parentelementname, string.Empty);
+            }
+
+            return strarray;
         }
 
         /// <summary>

@@ -116,6 +116,10 @@
             xmlObj.Dispose();
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
+            xmlObj = new XmlObject("test.xml", testXml, true);
+            xmlObj.Dispose();
+            xmlObj = new XmlObject("test.xml", testXml, true);
+            xmlObj.Dispose();
         }
     }
 }
