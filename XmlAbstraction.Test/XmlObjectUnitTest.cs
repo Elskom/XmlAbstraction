@@ -34,7 +34,7 @@
         [Fact]
         public void TestClassReopenFile()
         {
-            var testXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            var testXml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <test>
 </test>";
             var xmlObj = new XmlObject(testXml);
