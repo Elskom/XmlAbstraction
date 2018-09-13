@@ -51,5 +51,26 @@
             xmlObj.Dispose();
             xmlObj.Dispose();
         }
+
+        [Fact]
+        public void TestClassDisposedExceptions()
+        {
+            var testXml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<test>
+</test>";
+            var xmlObj = new XmlObject(testXml);
+            xmlObj.Dispose();
+
+            // test to make sure that ObjectDisposedException is thrown.
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.AddAttribute("test", "test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test", new string[] { "test1", "test2", "test3" }));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test", "test", null));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.ReopenFile());
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Save());
+        }
     }
 }
