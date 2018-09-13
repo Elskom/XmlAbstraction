@@ -12,12 +12,12 @@ namespace XmlAbstraction
     using System.Windows.Forms;
     using System.Xml.Linq;
 
-    // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
-    // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
-    // method if the xml is not read-only. I did this to support read only memory access of xml.
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
+    // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
+    // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
+    // method if the xml is not read-only. I did this to support read only memory access of xml.
     public class XmlObject : IDisposable
     {
         // TODO: Add functions to remove XML Entries and Attributes too.
@@ -27,7 +27,7 @@ namespace XmlAbstraction
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlObject"/> class
         /// for reading xml data from memory.
-        /// 
+        ///
         /// With this contstructor, the <see cref="XmlObject"/> returned will be read-only.
         /// </summary>
         /// <param name="xmlcontent">The xml data to load into memory.</param>
@@ -176,6 +176,7 @@ namespace XmlAbstraction
                     // cannot change externally if it does not exist on file yet.
                     return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
                 }
+
                 // this must return false when in memory (read-only) state.
                 return false;
             }
