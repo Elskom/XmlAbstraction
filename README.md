@@ -1,6 +1,7 @@
 # XmlAbstraction
 
 [![NuGet Badge](https://buildstats.info/nuget/XmlAbstraction?includePreReleases=true)](https://www.nuget.org/packages/XmlAbstraction/)
+[![codecov](https://codecov.io/gh/AraHaan/XmlAbstraction/branch/master/graph/badge.svg)](https://codecov.io/gh/AraHaan/XmlAbstraction)
 
 A library that contains a System.Xml and System.Xml.Linq abstraction class.
 
