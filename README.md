@@ -10,7 +10,6 @@ A library that contains a System.Xml and System.Xml.Linq abstraction class.
 - Add functions to remove XML Entries and Attributes too.
 - Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
 - Add ways of adding, editing, and deleting elements within elements.
-- Add element to pending ElementsEdits dictionary. (AddAttribute)
 - Add Subelements to pending changes list. (Write(string, string, string[]))
 - Add edited Subelements to pending changes list. Then on save overwrite the whole collection with the pending data from here. (Write(string, string, string[]))
 

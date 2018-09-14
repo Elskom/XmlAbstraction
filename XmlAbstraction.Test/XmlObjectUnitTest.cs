@@ -129,7 +129,7 @@
             xmlObj.Dispose();
             xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj.Dispose();
-            xmlObj = new XmlObject($"{Application.StartupPath}{Path.DirectorySeparatorChar}test.xml", testXml, true);
+            xmlObj = new XmlObject($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj.Dispose();
         }
     }

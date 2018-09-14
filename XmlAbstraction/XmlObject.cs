@@ -66,22 +66,22 @@ namespace XmlAbstraction
         /// The fallback content string to write into the fallback XML File
         /// if the file does not exist or if the file is empty.
         /// </param>
-        /// <param name="saveToAppStartFolder">
+        /// <param name="saveToCurrentDirectory">
         /// Controls weather to save the file to the xmlfilename param string if
-        /// it is the full path or to the Application Startup Path if it supplies file name only.
+        /// it is the full path or to the Current Directory if it supplies file name only.
         /// </param>
-        public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToAppStartFolder)
+        public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToCurrentDirectory)
         {
             this.ObjLock = new object();
             this.ElementsAdded = new Dictionary<string, XmlElementData>();
             this.ElementsEdits = new Dictionary<string, XmlElementData>();
             this.ElementAttributesDeleted = new Dictionary<string, XmlElementData>();
             this.ElementsDeleted = new List<string>();
-            if (saveToAppStartFolder)
+            if (saveToCurrentDirectory)
             {
-                if (!xmlfilename.Contains(Application.StartupPath))
+                if (!xmlfilename.Contains(Environment.CurrentDirectory))
                 {
-                    var newstr = Application.StartupPath + xmlfilename;
+                    var newstr = Environment.CurrentDirectory + xmlfilename;
                     xmlfilename = newstr;
                 }
             }
@@ -303,7 +303,20 @@ namespace XmlAbstraction
                         }
                         else
                         {
-                            // TODO: Add element to pending ElementsEdits dictionary.
+                            var xmleldata = new XmlElementData
+                            {
+                                Name = elementname,
+                            };
+                            var xMLAttributeData = new XmlAttributeData
+                            {
+                                AttributeName = attributename,
+                                Value = attributevalue.ToString(),
+                            };
+                            xmleldata.Attributes = new List<XmlAttributeData>
+                            {
+                                xMLAttributeData,
+                            };
+                            this.ElementsEdits.Add(elementname, xmleldata);
                         }
                     }
                 }
