@@ -565,7 +565,7 @@ namespace XmlAbstraction
                     y => (string)y).ToArray();
             }
 
-            if (elem == XElement.EmptySequence)
+            if (elem.Count() == 0)
             {
                 this.Write(parentelementname, string.Empty);
             }
@@ -702,7 +702,15 @@ namespace XmlAbstraction
                         }
 
                         // apply changes.
-                        this.Doc.Save(this.CachedXmlfilename);
+                        try
+                        {
+                            this.Doc.Save(this.CachedXmlfilename);
+                        }
+                        catch (Exception)
+                        {
+                            // the saving failed. probably due to missing permissions.
+                        }
+
                         this.ElementsAdded.Clear();
                         this.ElementsEdits.Clear();
                         this.ElementAttributesDeleted.Clear();

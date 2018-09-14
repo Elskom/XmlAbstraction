@@ -62,13 +62,13 @@
             xmlObj.Dispose();
 
             // test to make sure that ObjectDisposedException is thrown.
-            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.AddAttribute("test", "test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.AddAttribute("test4", "test", "test"));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test"));
-            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test", "test"));
-            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test", "test", new string[] { "test1", "test2", "test3" }));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test2", "test", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test"));
-            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test", "test"));
-            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test", "test", null));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test2", "test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test3", "test31", null));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.ReopenFile());
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Save());
         }
@@ -85,10 +85,10 @@
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.AddAttribute("test4", "test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test", new string[] { "test1", "test2", "test3" }));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test2", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test3", "test", null));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test3", "test31", null));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
 
             // reopen data from a file.
