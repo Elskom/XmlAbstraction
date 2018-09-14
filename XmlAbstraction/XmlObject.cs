@@ -781,14 +781,22 @@ namespace XmlAbstraction
         private void AddElement(string elementname, string value)
         {
             var elem = this.Doc.Root.Element(elementname);
-            if (elem == null || !this.ElementsAdded.ContainsKey(elementname))
+            if (elem == null)
             {
                 var xMLElementData = new XmlElementData
                 {
                     Attributes = null,
                     Value = value,
                 };
-                this.ElementsAdded.Add(elementname, xMLElementData);
+                if (!this.ElementsAdded.ContainsKey(elementname))
+                {
+                    this.ElementsAdded.Add(elementname, xMLElementData);
+                }
+                else
+                {
+                    this.ElementsAdded[elementname] = xMLElementData;
+                }
+
                 this.HasChanged = true;
             }
             else
