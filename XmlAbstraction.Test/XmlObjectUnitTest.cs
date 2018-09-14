@@ -81,6 +81,8 @@
             var testXml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <test>
 </test>";
+            var testXmlNoRoot = @"<test>
+</test>";
             var xmlObj = new XmlObject(testXml);
 
             // test to make sure that InvalidOperationException is thrown.
@@ -94,7 +96,8 @@
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
-
+            xmlObj.Dispose();
+            xmlObj = new XmlObject(testXmlNoRoot);
             // reopen data from a file.
             xmlObj.Dispose();
             var fstrm = File.Create(
@@ -122,9 +125,11 @@
             xmlObj.Dispose();
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
-            xmlObj = new XmlObject("test.xml", testXml, true);
+            xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj.Dispose();
-            xmlObj = new XmlObject("test.xml", testXml, true);
+            xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
+            xmlObj.Dispose();
+            xmlObj = new XmlObject($"{Application.StartupPath}{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj.Dispose();
         }
     }
