@@ -487,25 +487,23 @@ namespace XmlAbstraction
             }
 
             var elem = this.Doc.Root.Element(elementname);
-            if (elem != null)
+            if (elem != null
+                || this.ElementsAdded.ContainsKey(elementname)
+                || this.ElementsEdits.ContainsKey(elementname))
             {
                 // do not dare to look in _elements_deleted.
                 return elem != null
                     ? elem.Value
-                    : (this.ElementsEdits.ContainsKey(elementname)
-                        ? this.ElementsEdits[elementname].Value
-                        : string.Empty);
+                    : (this.ElementsAdded.ContainsKey(elementname)
+                        ? this.ElementsAdded[elementname].Value
+                        : (this.ElementsEdits.ContainsKey(elementname)
+                            ? this.ElementsEdits[elementname].Value
+                            : string.Empty));
             }
             else
             {
                 this.Write(elementname, string.Empty);
-                var output = this.ElementsAdded.ContainsKey(elementname)
-                    ? this.ElementsAdded[elementname].Value : string.Empty;
-
-                // if elementwas added before but was edited.
-                output = (this.ElementsEdits.ContainsKey(elementname) && output == string.Empty)
-                    ? this.ElementsEdits[elementname].Value : output;
-                return output;
+                return string.Empty;
             }
         }
 
