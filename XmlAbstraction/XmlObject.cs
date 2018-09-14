@@ -619,8 +619,41 @@ namespace XmlAbstraction
 
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                // before deleting the attribute (if it exists in xml), check if in any
-                // of the dictionaries then add it to the dictionary for deleting values.
+                if (this.ElementsAdded.ContainsKey(elementname))
+                {
+                    foreach (var attribute in this.ElementsAdded[elementname].Attributes)
+                    {
+                        if (attribute.AttributeName.Equals(attributename))
+                        {
+                            this.ElementsAdded[elementname].Attributes.Remove(attribute);
+                        }
+                    }
+                }
+                else if (this.ElementsEdits.ContainsKey(elementname))
+                {
+                    foreach (var attribute in this.ElementsEdits[elementname].Attributes)
+                    {
+                        if (attribute.AttributeName.Equals(attributename))
+                        {
+                            this.ElementsEdits[elementname].Attributes.Remove(attribute);
+                        }
+                    }
+                }
+                else if (this.Doc.Root.Element(elementname).Attribute(attributename) != null)
+                {
+                    var xmleldata = new XmlElementData
+                    {
+                        Name = elementname,
+                        Attributes = new List<XmlAttributeData>(),
+                    };
+                    var xMLAttributeData = new XmlAttributeData
+                    {
+                        AttributeName = attributename,
+                        Value = null,
+                    };
+                    xmleldata.Attributes.Add(xMLAttributeData);
+                    this.ElementAttributesDeleted.Add(elementname, xmleldata);
+                }
             }
             else
             {
