@@ -108,7 +108,7 @@
             xmlObj = new XmlObject(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml",
                 testXml);
-            Assert.ThrowsAny<ArgumentException>(() => xmlObj.AddAttribute("test4", "test", "test"));
+            NoThrows(() => xmlObj.AddAttribute("test4", "test", "test"));
             NoThrows(() => xmlObj.Write("test", "test"));
             NoThrows(() => xmlObj.Write("test2", "test", "test"));
             NoThrows(() => xmlObj.Write("test3", "test", new string[] { "test1", "test2", "test3" }));
@@ -116,7 +116,6 @@
             NoThrows(() => xmlObj.Read("test2", "test"));
             NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.Read("test4"));
-            NoThrows(() => xmlObj.AddAttribute("test4", "test", "test"));
             NoThrows(() => xmlObj.ReopenFile());
             NoThrows(() => xmlObj.Read("test"));
             NoThrows(() => xmlObj.Read("test2", "test"));
