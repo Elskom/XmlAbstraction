@@ -154,30 +154,24 @@ namespace XmlAbstraction
         {
             get
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
+                var outxmlData = new MemoryStream();
+                this.Doc.Save(outxmlData);
+                var outXmlBytes = outxmlData.ToArray();
+                outxmlData.Dispose();
+
+                // ensure file length is not 0.
+                if (this.Exists != (
+                    File.Exists(this.CachedXmlfilename) &&
+                    Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
                 {
-                    var outxmlData = new MemoryStream();
-                    this.Doc.Save(outxmlData);
-                    var outXmlBytes = outxmlData.ToArray();
-                    outxmlData.Dispose();
-
-                    // ensure file length is not 0.
-                    if (this.Exists != (
-                        File.Exists(this.CachedXmlfilename) &&
-                        Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
-                    {
-                        // refresh Exists so it always works.
-                        this.Exists = File.Exists(this.CachedXmlfilename);
-                    }
-
-                    var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
-
-                    // cannot change externally if it does not exist on file yet.
-                    return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
+                    // refresh Exists so it always works.
+                    this.Exists = File.Exists(this.CachedXmlfilename);
                 }
 
-                // this must return false when in memory (read-only) state.
-                return false;
+                var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
+
+                // cannot change externally if it does not exist on file yet.
+                return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
             }
         }
 
@@ -735,11 +729,6 @@ namespace XmlAbstraction
         //     XMLOblect is disposed.
         private void AddElement(string elementname, string value)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null || !this.ElementsAdded.ContainsKey(elementname))
             {
