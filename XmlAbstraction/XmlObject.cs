@@ -232,7 +232,7 @@ namespace XmlAbstraction
                 var elem = this.Doc.Root.Element(elementname);
                 if (elem == null)
                 {
-                    this.Write(elementname, null);
+                    this.Write(elementname, string.Empty);
                 }
 
                 if (this.ElementsAdded.ContainsKey(elementname))
@@ -619,6 +619,7 @@ namespace XmlAbstraction
 
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
+                var elem = this.Doc.Root.Element(elementname);
                 if (this.ElementsAdded.ContainsKey(elementname))
                 {
                     foreach (var attribute in this.ElementsAdded[elementname].Attributes)
@@ -639,7 +640,7 @@ namespace XmlAbstraction
                         }
                     }
                 }
-                else if (this.Doc.Root.Element(elementname).Attribute(attributename) != null)
+                else if (elem != null && elem.Attribute(attributename) != null)
                 {
                     var xmleldata = new XmlElementData
                     {
@@ -653,6 +654,10 @@ namespace XmlAbstraction
                     };
                     xmleldata.Attributes.Add(xMLAttributeData);
                     this.ElementAttributesDeleted.Add(elementname, xmleldata);
+                }
+                else
+                {
+                    throw new ArgumentException("elementname or attributename does not exist in the xml or in pending edits.");
                 }
             }
             else
