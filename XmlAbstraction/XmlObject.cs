@@ -215,7 +215,7 @@ namespace XmlAbstraction
         /// pre-added before calling this function.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
-        /// <exception cref="Exception">Attribute already exists.</exception>
+        /// <exception cref="Exception">Attribute already exists in the xml file.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">The name of the element to add a attribute to.</param>
         /// <param name="attributename">The name of the attribute to add.</param>
@@ -349,7 +349,9 @@ namespace XmlAbstraction
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(elementname);
-                if (elem != null || this.ElementsAdded.ContainsKey(elementname))
+                if (elem != null
+                    || this.ElementsAdded.ContainsKey(elementname)
+                    || this.ElementsEdits.ContainsKey(elementname))
                 {
                     var xMLElementData = new XmlElementData
                     {
@@ -359,6 +361,7 @@ namespace XmlAbstraction
                                 ? this.ElementsEdits[elementname].Attributes
                                 : null),
                         Value = value,
+                        Name = elementname,
                     };
                     if (this.ElementsAdded.ContainsKey(elementname))
                     {
@@ -398,6 +401,7 @@ namespace XmlAbstraction
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
+        /// <exception cref="Exception">Attribute already exists in the xml file.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">
         /// The name of the element to create an attribute or set an
@@ -414,13 +418,7 @@ namespace XmlAbstraction
 
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                var elem = this.Doc.Root.Element(elementname);
-                if (elem != null || this.ElementsAdded.ContainsKey(elementname))
-                {
-                }
-                else
-                {
-                }
+                this.AddAttribute(elementname, attributename, attributevalue);
             }
             else
             {
@@ -455,11 +453,13 @@ namespace XmlAbstraction
                 }
 
                 var elem2 = this.Doc.Descendants(parentelementname);
-                if (elem2 == XElement.EmptySequence)
+                if (elem2.Count() == 0)
                 {
                     // TODO: Add Subelements to pending changes list.
                 }
-                else if (elem2 != XElement.EmptySequence || this.ElementsAdded.ContainsKey(elementname))
+                else if (elem2.Count() > 0
+                    || this.ElementsAdded.ContainsKey(elementname)
+                    || this.ElementsEdits.ContainsKey(elementname))
                 {
                     // TODO: Add edited Subelements to pending changes list. Then on save overwrite the whole collection with the pending data from here.
                 }
