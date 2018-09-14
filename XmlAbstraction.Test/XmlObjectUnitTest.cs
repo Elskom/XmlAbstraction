@@ -69,6 +69,8 @@
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test"));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test2", "test"));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Read("test3", "test31", null));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Delete("test"));
+            Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.ReopenFile());
             Assert.ThrowsAny<ObjectDisposedException>(() => xmlObj.Save());
         }
@@ -89,6 +91,8 @@
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test3", "test31", null));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test"));
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
 
             // reopen data from a file.
@@ -112,6 +116,8 @@
             NoThrows(() => xmlObj.Read("test"));
             NoThrows(() => xmlObj.Read("test2", "test"));
             NoThrows(() => xmlObj.Read("test3", "test", null));
+            NoThrows(() => xmlObj.Delete("test"));
+            NoThrows(() => xmlObj.Delete("test2", "test"));
             NoThrows(() => xmlObj.Save());
             xmlObj.Dispose();
             File.Delete(
