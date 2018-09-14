@@ -117,6 +117,7 @@
             NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.Read("test4"));
             NoThrows(() => xmlObj.ReopenFile());
+            NoThrows(() => xmlObj.Write("test", "testnew"));
             NoThrows(() => xmlObj.Read("test"));
             NoThrows(() => xmlObj.Read("test2", "test"));
             NoThrows(() => xmlObj.Read("test3", "test", null));
