@@ -98,8 +98,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\$(TargetFramework)\XmlAbstraction.xml</DocumentationFile>
-    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Any CPU\Debug\XmlAbstraction.xml</DocumentationFile>
+    <OutputPath>bin\Any CPU\Debug\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
     <DebugType>full</DebugType>
@@ -110,8 +110,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>bin\Release\$(TargetFramework)\XmlAbstraction.xml</DocumentationFile>
+    <OutputPath>bin\Any CPU\Release\</OutputPath>
+    <DocumentationFile>bin\Any CPU\Release\$(TargetFramework)\XmlAbstraction.xml</DocumentationFile>
     <ErrorReport>send</ErrorReport>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
