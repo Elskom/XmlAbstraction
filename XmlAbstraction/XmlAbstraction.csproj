@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0;netcoreapp2.1;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
     <RootNamespace>XmlAbstraction</RootNamespace>
     <AssemblyName>XmlAbstraction</AssemblyName>
     <LangVersion>latest</LangVersion>
@@ -17,6 +17,7 @@
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
     <PackageReleaseNotes>A bit of changes and implemented TODOs and some fixes as well.</PackageReleaseNotes>
+    <PublishDocumentationFile>true</PublishDocumentationFile>
   </PropertyGroup>
 
   <!-- Conditionally obtain references for the .NET Framework 4.0 target -->
