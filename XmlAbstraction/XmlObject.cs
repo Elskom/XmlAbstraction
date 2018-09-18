@@ -563,8 +563,14 @@ namespace XmlAbstraction
             var strarray = new string[] { };
             foreach (var element in elem)
             {
-                strarray = element.Elements(elementname).Select(
-                    y => (string)y).ToArray();
+                var elements = element.Elements(elementname);
+                var elemValues = new List<string>();
+                foreach (var elemnt in elements)
+                {
+                    elemValues.Add(elemnt.Value);
+                }
+
+                strarray = elemValues.ToArray();
             }
 
             if (elem.Count() == 0)
