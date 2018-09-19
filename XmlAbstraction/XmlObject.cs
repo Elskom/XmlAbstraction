@@ -20,9 +20,7 @@ namespace XmlAbstraction
     // method if the xml is not read-only. I did this to support read only memory access of xml.
     public class XmlObject : IDisposable
     {
-        // TODO: Add functions to remove XML Entries and Attributes too.
         // TODO: Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
-        // TODO: Add ways of adding, editing, and deleting elements within elements.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlObject"/> class
@@ -454,16 +452,28 @@ namespace XmlAbstraction
                 }
 
                 var elem2 = this.Doc.Descendants(parentelementname);
-                if (elem2.Count() == 0)
+                if (elem2.Count() > 0)
                 {
-                    // TODO: Add Subelements to pending changes list.
+                    // for Save() to work.
+                    this.Delete(parentelementname);
                 }
-                else if (elem2.Count() > 0
-                    || this.ElementsAdded.ContainsKey(elementname)
-                    || this.ElementsEdits.ContainsKey(elementname))
+
+                var xmleldata = new XmlElementData
                 {
-                    // TODO: Add edited Subelements to pending changes list. Then on save overwrite the whole collection with the pending data from here.
+                    Name = parentelementname,
+                    Subelements = new List<XmlElementData>(),
+                };
+                foreach (var value in values)
+                {
+                    var xmlelsubelement = new XmlElementData
+                    {
+                        Name = elementname,
+                        Value = value,
+                    };
+                    xmleldata.Subelements.Add(xmlelsubelement);
                 }
+
+                this.ElementsAdded.Add(parentelementname, xmleldata);
             }
             else
             {
@@ -584,6 +594,7 @@ namespace XmlAbstraction
 
         /// <summary>
         /// Deletes an xml element using the element name.
+        /// Can also delete not only the parrent element but also subelements with it.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname does not exist in the xml or in pending edits.</exception>
@@ -728,9 +739,12 @@ namespace XmlAbstraction
                                 }
 
                                 // add subelements and their attributes.
-                                foreach (var element in added_elements.Value.Subelements)
+                                if (added_elements.Value.Subelements != null)
                                 {
-                                    this.SaveAddedSubelements(elem, element);
+                                    foreach (var element in added_elements.Value.Subelements)
+                                    {
+                                        this.SaveAddedSubelements(elem, element);
+                                    }
                                 }
                             }
                         }
@@ -868,7 +882,7 @@ namespace XmlAbstraction
         {
             internal string Name { get; set; } = string.Empty;
 
-            internal XmlElementData[] Subelements { get; set; } = null;
+            internal List<XmlElementData> Subelements { get; set; } = null;
 
             internal List<XmlAttributeData> Attributes { get; set; } = new List<XmlAttributeData>();
 
