@@ -7,7 +7,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>send</ErrorReport>
     <DebugType>full</DebugType>
@@ -15,7 +15,7 @@
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ErrorReport>send</ErrorReport>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -25,69 +25,12 @@
   <ItemGroup>
     <PackageReference Include="Codecov" Version="1.1.0" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
+    <PackageReference Include="xunit">
+      <Version>2.4.1-pre.build.4059</Version>
+    </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1-pre.build.4059">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="xunit">
-      <Version>2.4.1-pre.build.4059</Version>
     </PackageReference>
   </ItemGroup>
 

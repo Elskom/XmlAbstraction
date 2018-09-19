@@ -14,6 +14,7 @@ namespace XmlAbstraction
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
+    // on version 1.1.0 will remove IDisposable from this class as it does not need to be disposable.
     // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
     // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
     // method if the xml is not read-only. I did this to support read only memory access of xml.
