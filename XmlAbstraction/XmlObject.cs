@@ -547,7 +547,11 @@ namespace XmlAbstraction
             }
             else if (elem != null)
             {
-                return elem.Attribute(attributename).Value;
+                var attribute = elem.Attribute(attributename);
+                if (attribute != null)
+                {
+                    return attribute.Value;
+                }
             }
             else if (this.ElementsAdded.ContainsKey(elementname))
             {
