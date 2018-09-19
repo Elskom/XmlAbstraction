@@ -1,4 +1,4 @@
-version: 1.0.0.0-alpha{build}
+version: 1.0.1.0-alpha{build}
 branches:
   only:
   - master
@@ -17,7 +17,7 @@ build:
   verbosity: minimal
 test_script:
 - cmd: >-
-    "%UserProfile%\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe" -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:".\XmlAbstraction.Test\bin\Release\net472\XmlAbstraction.Test.dll -noshadow" -filter:"+[XmlAbstraction*]* -[XmlAbstraction.Test*]*" -output:".\XmlAbstraction_coverage.xml"
+    "%UserProfile%\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe" -register:user -target:"%UserProfile%\.nuget\packages\xunit.runner.console\2.4.1-pre.build.4059\tools\net472\xunit.console.x86.exe" -targetargs:".\XmlAbstraction.Test\bin\Release\net472\XmlAbstraction.Test.dll -noshadow" -filter:"+[XmlAbstraction*]* -[XmlAbstraction.Test*]*" -output:".\XmlAbstraction_coverage.xml"
 
     "%UserProfile%\.nuget\packages\Codecov\1.1.0\tools\codecov.exe" -f ".\XmlAbstraction_coverage.xml"
 deploy:
