@@ -14,14 +14,11 @@ namespace XmlAbstraction
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
     /// </summary>
-    // on version 1.1.0 will remove IDisposable from this class as it does not need to be disposable.
     // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
     // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
     // method if the xml is not read-only. I did this to support read only memory access of xml.
     public class XmlObject : IDisposable
     {
-        // TODO: Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
-
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlObject"/> class
         /// for reading xml data from memory.
@@ -548,8 +545,31 @@ namespace XmlAbstraction
             {
                 this.Write(elementname, attributename, string.Empty);
             }
+            else if (elem != null)
+            {
+                return elem.Attribute(attributename).Value;
+            }
+            else if (this.ElementsAdded.ContainsKey(elementname))
+            {
+                foreach (var attribute in this.ElementsAdded[elementname].Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename))
+                    {
+                        return attribute.Value;
+                    }
+                }
+            }
+            else if (this.ElementsEdits.ContainsKey(elementname))
+            {
+                foreach (var attribute in this.ElementsEdits[elementname].Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename))
+                    {
+                        return attribute.Value;
+                    }
+                }
+            }
 
-            // until this is done.
             return string.Empty;
         }
 
@@ -616,8 +636,23 @@ namespace XmlAbstraction
 
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
-                // before deleting the node (if it exists in xml), check if in any
-                // of the dictionaries then add it to the dictionary for deleting values.
+                var elem = this.Doc.Root.Element(elementname);
+                if (this.ElementsAdded.ContainsKey(elementname))
+                {
+                    this.ElementsAdded.Remove(elementname);
+                }
+                else if (this.ElementsEdits.ContainsKey(elementname))
+                {
+                    this.ElementsEdits.Remove(elementname);
+                }
+                else if (elem != null)
+                {
+                    this.ElementsDeleted.Add(elementname);
+                }
+                else
+                {
+                    throw new ArgumentException("elementname does not exist in the xml or in pending edits.");
+                }
             }
             else
             {

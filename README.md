@@ -5,19 +5,15 @@
 
 A library that contains a System.Xml and System.Xml.Linq abstraction class.
 
-# TODOs:
-
-- Finish Read(string elementname, string attributename) and Write(string elementname, string attributename, object attributevalue) shortcut methods.
-
-Contributions:
+# Contributions
 
 Any contributions that helps on the TODO's optimizes the code, or just flat out new feature requests are welcome.
 Also be sure to frequently check the [contributing](.github/CONTRIBUTING.md) file.
 
-License:
+# License
 
 MIT
 
-Code of Conduct:
+# Code of Conduct
 
 See our Code of Conduct [here](CODE_OF_CONDUCT.md).
