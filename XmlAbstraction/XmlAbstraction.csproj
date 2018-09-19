@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
     <Copyright>Copyright 2018</Copyright>
     <PackageTags>XML</PackageTags>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageReleaseNotes>A bit of changes and implemented TODOs and some fixes as well.</PackageReleaseNotes>
+    <PackageReleaseNotes>A breaking change removing IDisposable from XmlObject.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
   </PropertyGroup>
 

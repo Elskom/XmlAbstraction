@@ -17,7 +17,7 @@ namespace XmlAbstraction
     // Only the Save() method should do direct edits to the XDocument object of the class named "Doc".
     // The rest should just use the dictionaries for the changes to be applied to the xml in the Save()
     // method if the xml is not read-only. I did this to support read only memory access of xml.
-    public class XmlObject : IDisposable
+    public class XmlObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlObject"/> class
@@ -113,11 +113,6 @@ namespace XmlAbstraction
             this.Doc = (fileSize > 0) ? XDocument.Load(xmlfilename) : XDocument.Parse(fallbackxmlcontent);
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="XmlObject"/> is disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; } = false;
-
         private object ObjLock { get; set; }
 
         private XDocument Doc { get; set; }
@@ -181,15 +176,9 @@ namespace XmlAbstraction
         /// but only if it has changed. If the file was not saved it
         /// will be saved first.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">Cannot reopen on read-only instances.</exception>
         public void ReopenFile()
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 this.Save();
@@ -202,7 +191,7 @@ namespace XmlAbstraction
         }
 
         /// <summary>
-        /// Adds or edits an attribute in an Element and sets it's value in the XMLObject.
+        /// Adds or edits an attribute in an Element and sets it's value in the <see cref="XmlObject"/>.
         ///
         /// This method can also remove the attribute by setting the value to null.
         ///
@@ -210,7 +199,6 @@ namespace XmlAbstraction
         /// empty value as well as making the attribute as if the Element was
         /// pre-added before calling this function.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="Exception">Attribute already exists in the xml file.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">The name of the element to add a attribute to.</param>
@@ -218,11 +206,6 @@ namespace XmlAbstraction
         /// <param name="attributevalue">The value of the attribute.</param>
         public void AddAttribute(string elementname, string attributename, object attributevalue)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(elementname);
@@ -331,17 +314,11 @@ namespace XmlAbstraction
         ///
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">The name of the element to write to or create.</param>
         /// <param name="value">The value for the element.</param>
         public void Write(string elementname, string value)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(elementname);
@@ -396,7 +373,6 @@ namespace XmlAbstraction
         ///
         /// If Element does not exist yet it will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="Exception">Attribute already exists in the xml file.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="elementname">
@@ -407,11 +383,6 @@ namespace XmlAbstraction
         /// <param name="attributevalue">The value of the attribute to use.</param>
         public void Write(string elementname, string attributename, string attributevalue)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 this.AddAttribute(elementname, attributename, attributevalue);
@@ -428,18 +399,12 @@ namespace XmlAbstraction
         ///
         /// If Elements do not exist yet they will be created automatically.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">When called from a read-only instance.</exception>
         /// <param name="parentelementname">parrent element name of the subelement.</param>
         /// <param name="elementname">The name to use when writing subelement(s).</param>
         /// <param name="values">The array of values to use for the subelement(s).</param>
         public void Write(string parentelementname, string elementname, string[] values)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(parentelementname);
@@ -490,17 +455,11 @@ namespace XmlAbstraction
         ///
         /// If Element does not exist yet it will be created automatically with an empty value.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string Read(string elementname)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             var elem = this.Doc.Root.Element(elementname);
             if (elem != null
                 || this.ElementsAdded.ContainsKey(elementname)
@@ -528,18 +487,12 @@ namespace XmlAbstraction
         /// If Element and the attribute does not exist yet it will be created automatically
         /// with an empty value.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string Read(string elementname, string attributename)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null)
             {
@@ -583,7 +536,6 @@ namespace XmlAbstraction
         /// If Parent Element does not exist yet it will be created automatically
         /// with an empty value. In that case an empty string array is returned.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
@@ -596,11 +548,6 @@ namespace XmlAbstraction
         /// </returns>
         public string[] Read(string parentelementname, string elementname, object unused = null)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             var elem = this.Doc.Descendants(parentelementname);
             var strarray = new string[] { };
             foreach (var element in elem)
@@ -627,17 +574,11 @@ namespace XmlAbstraction
         /// Deletes an xml element using the element name.
         /// Can also delete not only the parrent element but also subelements with it.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname does not exist in the xml or in pending edits.</exception>
         /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name of the element to delete.</param>
         public void Delete(string elementname)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(elementname);
@@ -667,18 +608,12 @@ namespace XmlAbstraction
         /// <summary>
         /// Removes an xml attribute using the element name and the name of the attribute.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         /// <exception cref="ArgumentException">elementname or attributename does not exist in the xml or in pending edits.</exception>
         /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name that has the attribute to delete.</param>
         /// <param name="attributename">The name of the attribute to delete.</param>
         public void Delete(string elementname, string attributename)
         {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(XmlObject));
-            }
-
             if (!this.CachedXmlfilename.Equals(":memory"))
             {
                 var elem = this.Doc.Root.Element(elementname);
@@ -731,7 +666,6 @@ namespace XmlAbstraction
         /// <summary>
         /// Saves the underlying XML file if it changed.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"><see cref="XmlObject"/> is disposed.</exception>
         public void Save()
         {
             // do not save in memory xml. It should be read only.
@@ -739,11 +673,6 @@ namespace XmlAbstraction
             {
                 lock (this.ObjLock)
                 {
-                    if (this.IsDisposed)
-                    {
-                        throw new ObjectDisposedException(nameof(XmlObject));
-                    }
-
                     if (this.HasChangedExternally && this.Exists)
                     {
                         // reopen file to apply changes at runtime to it.
@@ -831,11 +760,6 @@ namespace XmlAbstraction
             }
         }
 
-        /// <summary>
-        /// Disposes of the <see cref="XmlObject"/> and saves the underlying XML file if it changed.
-        /// </summary>
-        public void Dispose() => this.Dispose(true);
-
         // Summary:
         //   Adds an Element to the XmlObject but verifies it does not exist first.
         //
@@ -895,25 +819,6 @@ namespace XmlAbstraction
                         this.SaveAddedSubelements(elem, element);
                     }
                 }
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!this.IsDisposed)
-            {
-                this.Save();
-                this.Exists = false;
-                this.HasChanged = false;
-
-                // remove everything from the Lists/Dictonaries then destroy them.
-                this.ElementsAdded = null;
-                this.ElementsEdits = null;
-                this.ElementAttributesDeleted = null;
-                this.ElementsDeleted = null;
-                this.Doc = null;
-                this.CachedXmlfilename = string.Empty;
-                this.IsDisposed = true;
             }
         }
 
