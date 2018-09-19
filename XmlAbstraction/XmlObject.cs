@@ -473,7 +473,14 @@ namespace XmlAbstraction
                     xmleldata.Subelements.Add(xmlelsubelement);
                 }
 
-                this.ElementsAdded.Add(parentelementname, xmleldata);
+                if (this.ElementsAdded.ContainsKey(parentelementname))
+                {
+                    this.ElementsAdded[parentelementname] = xmleldata;
+                }
+                else
+                {
+                    this.ElementsAdded.Add(parentelementname, xmleldata);
+                }
             }
             else
             {
