@@ -695,6 +695,25 @@ namespace XmlAbstraction
 
                     if (this.HasChanged)
                     {
+                        // start with deleted elements and attributes.
+                        foreach (var attributes_deleted in this.ElementAttributesDeleted)
+                        {
+                            var elem = this.Doc.Root.Element(attributes_deleted.Key);
+
+                            // remove attributes on to this element.
+                            foreach (var attributes in attributes_deleted.Value.Attributes)
+                            {
+                                elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
+                            }
+                        }
+
+                        // hopefully this actually deletes the elements stored in this list.
+                        foreach (var deleted_elements in this.ElementsDeleted)
+                        {
+                            var elem = this.Doc.Root.Element(deleted_elements);
+                            elem.Remove();
+                        }
+
                         foreach (var added_elements in this.ElementsAdded)
                         {
                             // add elements to doc.
@@ -728,24 +747,6 @@ namespace XmlAbstraction
                                     elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
                                 }
                             }
-                        }
-
-                        foreach (var attributes_deleted in this.ElementAttributesDeleted)
-                        {
-                            var elem = this.Doc.Root.Element(attributes_deleted.Key);
-
-                            // remove attributes on to this element.
-                            foreach (var attributes in attributes_deleted.Value.Attributes)
-                            {
-                                elem.SetAttributeValue(attributes.AttributeName, attributes.Value);
-                            }
-                        }
-
-                        // hopefully this actually deletes the elements stored in this list.
-                        foreach (var deleted_elements in this.ElementsDeleted)
-                        {
-                            var elem = this.Doc.Root.Element(deleted_elements);
-                            elem.Remove();
                         }
 
                         // apply changes.
