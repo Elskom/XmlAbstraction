@@ -1,4 +1,4 @@
-version: 1.1.0.0-alpha{build}
+version: 1.1.1.0-alpha{build}
 branches:
   only:
   - master
@@ -12,7 +12,8 @@ build:
   project: XmlAbstraction.sln
   publish_nuget: true
   publish_nuget_symbols: true
-  include_nuget_references: true
+  # this warns anyway for netcore and netstandard projects.
+  # include_nuget_references: true
   parallel: true
   verbosity: minimal
 test_script:

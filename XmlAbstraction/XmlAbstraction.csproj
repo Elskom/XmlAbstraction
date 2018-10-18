@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp2.0;netcoreapp2.1;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>XmlAbstraction</RootNamespace>
     <AssemblyName>XmlAbstraction</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
     <Copyright>Copyright 2018</Copyright>
     <PackageTags>XML</PackageTags>
@@ -16,7 +17,7 @@
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageReleaseNotes>A breaking change removing IDisposable from XmlObject.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed issue causing documentation files to not get included in the package.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
   </PropertyGroup>
 
@@ -99,7 +100,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Any CPU\Debug\XmlAbstraction.xml</DocumentationFile>
     <OutputPath>bin\Any CPU\Debug\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
@@ -112,7 +112,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <OutputPath>bin\Any CPU\Release\</OutputPath>
-    <DocumentationFile>bin\Any CPU\Release\$(TargetFramework)\XmlAbstraction.xml</DocumentationFile>
     <ErrorReport>send</ErrorReport>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
