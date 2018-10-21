@@ -95,16 +95,7 @@ namespace XmlAbstraction
                 this.HasChanged = !this.Exists;
                 if (this.Exists)
                 {
-                    FileInfo fileinfo = null;
-                    try
-                    {
-                        fileinfo = new FileInfo(xmlfilename);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-
+                    var fileinfo = new FileInfo(xmlfilename);
                     fileSize = fileinfo.Length;
                 }
             }
