@@ -75,7 +75,14 @@ namespace XmlAbstraction
             this.ElementsDeleted = new List<string>();
             if (saveToCurrentDirectory)
             {
-                if (!xmlfilename.Contains(Environment.CurrentDirectory))
+                var directory = new DirectoryInfo(xmlfilename);
+                if (!directory.Parent.Exists)
+                {
+                    throw new DirectoryNotFoundException("Directory in filename was not found.");
+                }
+
+                if (!xmlfilename.Contains(Environment.CurrentDirectory) &&
+                    directory.Parent.FullName == Environment.CurrentDirectory)
                 {
                     xmlfilename = Environment.CurrentDirectory + Path.DirectorySeparatorChar + xmlfilename;
                 }
