@@ -590,6 +590,7 @@ namespace XmlAbstraction
                 {
                     throw new ArgumentException("elementname does not exist in the xml or in pending edits.");
                 }
+                this.HasChanged = true;
             }
             else
             {
@@ -648,6 +649,7 @@ namespace XmlAbstraction
                 {
                     throw new ArgumentException("elementname or attributename does not exist in the xml or in pending edits.");
                 }
+                this.HasChanged = true;
             }
             else
             {
