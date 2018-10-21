@@ -77,8 +77,7 @@ namespace XmlAbstraction
             {
                 if (!xmlfilename.Contains(Environment.CurrentDirectory))
                 {
-                    var newstr = Environment.CurrentDirectory + xmlfilename;
-                    xmlfilename = newstr;
+                    xmlfilename = Environment.CurrentDirectory + Path.DirectorySeparatorChar + xmlfilename;
                 }
             }
 
