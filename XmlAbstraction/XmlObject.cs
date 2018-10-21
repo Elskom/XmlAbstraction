@@ -214,29 +214,24 @@ namespace XmlAbstraction
                 if (this.ElementsAdded.ContainsKey(elementname))
                 {
                     var xmleldata = this.ElementsAdded[elementname];
-                    var found = false;
                     if (xmleldata.Attributes != null)
                     {
                         foreach (var attribute in xmleldata.Attributes)
                         {
                             if (attribute.AttributeName.Equals(attributename))
                             {
-                                found = true;
-                                attribute.AttributeName = attributevalue.ToString();
+                                attribute.Value = attributevalue.ToString();
                             }
                         }
                     }
 
-                    if (found)
+                    var xMLAttributeData = new XmlAttributeData
                     {
-                        var xMLAttributeData = new XmlAttributeData
-                        {
-                            AttributeName = attributename,
-                            Value = attributevalue.ToString(),
-                        };
-                        xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                        xmleldata.Attributes.Add(xMLAttributeData);
-                    }
+                        AttributeName = attributename,
+                        Value = attributevalue.ToString(),
+                    };
+                    xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
+                    xmleldata.Attributes.Add(xMLAttributeData);
                 }
                 else if (this.ElementsEdits.ContainsKey(elementname))
                 {
