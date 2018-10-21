@@ -728,20 +728,13 @@ namespace XmlAbstraction
                             }
                         }
 
-                        // apply changes.
-                        try
-                        {
-                            this.Doc.Save(this.CachedXmlfilename);
-                        }
-                        catch (Exception)
-                        {
-                            // the saving failed. probably due to missing permissions.
-                        }
-
                         this.ElementsAdded.Clear();
                         this.ElementsEdits.Clear();
                         this.ElementAttributesDeleted.Clear();
                         this.ElementsDeleted.Clear();
+
+                        // apply changes.
+                        this.Doc.Save(this.CachedXmlfilename);
 
                         // avoid unneeded writes if nothing changed after this.
                         this.HasChanged = false;
