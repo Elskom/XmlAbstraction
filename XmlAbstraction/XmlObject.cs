@@ -582,7 +582,7 @@ namespace XmlAbstraction
                 {
                     this.ElementsEdits.Remove(elementname);
                 }
-                else if (elem != null && !this.ElementsDeleted.Contains(elementname))
+                else if (elem != null && !this.ElementsDeleted.ContainsKey(elementname))
                 {
                     this.ElementsDeleted.Add(elementname);
                 }
@@ -631,7 +631,8 @@ namespace XmlAbstraction
                         }
                     }
                 }
-                else if (elem != null && elem.Attribute(attributename) != null && !this.ElementAttributesDeleted.Contains(elementname))
+                else if (elem != null && elem.Attribute(attributename) != null
+                    && !this.ElementAttributesDeleted.ContainsKey(elementname))
                 {
                     var xmleldata = new XmlElementData
                     {
