@@ -75,10 +75,16 @@ namespace XmlAbstraction
             this.ElementsDeleted = new List<string>();
             if (saveToCurrentDirectory)
             {
-                if (!xmlfilename.Contains(Environment.CurrentDirectory))
+                var directory = new DirectoryInfo(xmlfilename);
+                if (!directory.Parent.Exists)
                 {
-                    var newstr = Environment.CurrentDirectory + xmlfilename;
-                    xmlfilename = newstr;
+                    throw new DirectoryNotFoundException("Directory in filename was not found.");
+                }
+
+                if (!xmlfilename.Contains(Environment.CurrentDirectory) &&
+                    directory.Parent.FullName == Environment.CurrentDirectory)
+                {
+                    xmlfilename = Environment.CurrentDirectory + Path.DirectorySeparatorChar + xmlfilename;
                 }
             }
 
@@ -96,16 +102,7 @@ namespace XmlAbstraction
                 this.HasChanged = !this.Exists;
                 if (this.Exists)
                 {
-                    FileInfo fileinfo = null;
-                    try
-                    {
-                        fileinfo = new FileInfo(xmlfilename);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-
+                    var fileinfo = new FileInfo(xmlfilename);
                     fileSize = fileinfo.Length;
                 }
             }
@@ -217,29 +214,24 @@ namespace XmlAbstraction
                 if (this.ElementsAdded.ContainsKey(elementname))
                 {
                     var xmleldata = this.ElementsAdded[elementname];
-                    var found = false;
                     if (xmleldata.Attributes != null)
                     {
                         foreach (var attribute in xmleldata.Attributes)
                         {
                             if (attribute.AttributeName.Equals(attributename))
                             {
-                                found = true;
-                                attribute.AttributeName = attributevalue.ToString();
+                                attribute.Value = attributevalue.ToString();
                             }
                         }
                     }
 
-                    if (found)
+                    var xMLAttributeData = new XmlAttributeData
                     {
-                        var xMLAttributeData = new XmlAttributeData
-                        {
-                            AttributeName = attributename,
-                            Value = attributevalue.ToString(),
-                        };
-                        xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                        xmleldata.Attributes.Add(xMLAttributeData);
-                    }
+                        AttributeName = attributename,
+                        Value = attributevalue.ToString(),
+                    };
+                    xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
+                    xmleldata.Attributes.Add(xMLAttributeData);
                 }
                 else if (this.ElementsEdits.ContainsKey(elementname))
                 {
@@ -598,6 +590,8 @@ namespace XmlAbstraction
                 {
                     throw new ArgumentException("elementname does not exist in the xml or in pending edits.");
                 }
+
+                this.HasChanged = true;
             }
             else
             {
@@ -656,6 +650,8 @@ namespace XmlAbstraction
                 {
                     throw new ArgumentException("elementname or attributename does not exist in the xml or in pending edits.");
                 }
+
+                this.HasChanged = true;
             }
             else
             {
@@ -738,20 +734,13 @@ namespace XmlAbstraction
                             }
                         }
 
-                        // apply changes.
-                        try
-                        {
-                            this.Doc.Save(this.CachedXmlfilename);
-                        }
-                        catch (Exception)
-                        {
-                            // the saving failed. probably due to missing permissions.
-                        }
-
                         this.ElementsAdded.Clear();
                         this.ElementsEdits.Clear();
                         this.ElementAttributesDeleted.Clear();
                         this.ElementsDeleted.Clear();
+
+                        // apply changes.
+                        this.Doc.Save(this.CachedXmlfilename);
 
                         // avoid unneeded writes if nothing changed after this.
                         this.HasChanged = false;
