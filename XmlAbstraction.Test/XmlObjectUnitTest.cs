@@ -1,4 +1,4 @@
-﻿namespace XmlAbstraction.Test
+namespace XmlAbstraction.Test
 {
     using System;
     using System.IO;
@@ -15,7 +15,7 @@
             {
                 expression();
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 throw new Exception("Expression threw an exception.");
             }
@@ -79,7 +79,9 @@
             NoThrows(() => xmlObj.Read("test2", "test"));
             NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.Delete("test"));
+            Assert.ThrowsAny<ArgumentException>(() => xmlObj.Delete("test"));
             NoThrows(() => xmlObj.Delete("test2", "test"));
+            Assert.ThrowsAny<ArgumentException>(() => xmlObj.Delete("test2", "test"));
             NoThrows(() => xmlObj.Save());
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
@@ -110,6 +112,9 @@
             Assert.True(File.Exists(testXmlFile));
         }
 
+        // I do not like using "C:\" in case there is no "C:\"
+        // or if "C:\" is not Windows. As such I really like the %SystemDrive% value.
+
         [Fact]
         public void Test_create_file_remote_directory_Pass()
         {
@@ -117,7 +122,15 @@
             var testXmlFile = @"C:\Temp\testCreate.xml";
 
             if (File.Exists(testXmlFile))
+            {
                 File.Delete(testXmlFile);
+            }
+
+            if (!Directory.Exists(@"C:\Temp\"))
+            {
+                // create if this directory does not exist so this test pass.
+                Directory.Create(@"C:\Temp\");
+            }
 
             Assert.False(File.Exists(testXmlFile));
 
@@ -125,7 +138,13 @@
             xmlObj.Save();
 
             Assert.True(File.Exists(testXmlFile));
+            File.Delete(testXmlFile);
+            Directory.Delete(@"C:\Temp\");
         }
+
+        // Seems that under AppVeyor, the tests could
+        // be running in Administrator mode and so this test fails.
+        // We need to somehow force this test to run in normal user mode instead.
 
         [Fact]
         public void Test_create_file_remote_violation_Fail()

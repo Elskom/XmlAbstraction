@@ -566,7 +566,7 @@ namespace XmlAbstraction
         /// Deletes an xml element using the element name.
         /// Can also delete not only the parrent element but also subelements with it.
         /// </summary>
-        /// <exception cref="ArgumentException">elementname does not exist in the xml or in pending edits.</exception>
+        /// <exception cref="ArgumentException">elementname does not exist in the xml, in pending edits, or was already deleted.</exception>
         /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name of the element to delete.</param>
         public void Delete(string elementname)
@@ -582,13 +582,13 @@ namespace XmlAbstraction
                 {
                     this.ElementsEdits.Remove(elementname);
                 }
-                else if (elem != null)
+                else if (elem != null && !this.ElementsDeleted.Contains(elementname))
                 {
                     this.ElementsDeleted.Add(elementname);
                 }
                 else
                 {
-                    throw new ArgumentException("elementname does not exist in the xml or in pending edits.");
+                    throw new ArgumentException("elementname does not exist in the xml, in pending edits, or was already deleted.");
                 }
 
                 this.HasChanged = true;
@@ -602,7 +602,7 @@ namespace XmlAbstraction
         /// <summary>
         /// Removes an xml attribute using the element name and the name of the attribute.
         /// </summary>
-        /// <exception cref="ArgumentException">elementname or attributename does not exist in the xml or in pending edits.</exception>
+        /// <exception cref="ArgumentException">elementname or attributename does not exist in the xml, in pending edits, or was already deleted.</exception>
         /// <exception cref="InvalidOperationException">When the object is a read-only instance.</exception>
         /// <param name="elementname">The element name that has the attribute to delete.</param>
         /// <param name="attributename">The name of the attribute to delete.</param>
@@ -631,7 +631,7 @@ namespace XmlAbstraction
                         }
                     }
                 }
-                else if (elem != null && elem.Attribute(attributename) != null)
+                else if (elem != null && elem.Attribute(attributename) != null && !this.ElementAttributesDeleted.Contains(elementname))
                 {
                     var xmleldata = new XmlElementData
                     {
@@ -648,7 +648,7 @@ namespace XmlAbstraction
                 }
                 else
                 {
-                    throw new ArgumentException("elementname or attributename does not exist in the xml or in pending edits.");
+                    throw new ArgumentException("elementname or attributename does not exist in the xml, in pending edits, or was already deleted.");
                 }
 
                 this.HasChanged = true;
