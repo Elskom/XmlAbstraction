@@ -582,7 +582,7 @@ namespace XmlAbstraction
                 {
                     this.ElementsEdits.Remove(elementname);
                 }
-                else if (elem != null && !this.ElementsDeleted.ContainsKey(elementname))
+                else if (elem != null && !this.ElementsDeleted.Contains(elementname))
                 {
                     this.ElementsDeleted.Add(elementname);
                 }
