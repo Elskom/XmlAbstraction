@@ -129,7 +129,7 @@ namespace XmlAbstraction.Test
             if (!Directory.Exists(@"C:\Temp\"))
             {
                 // create if this directory does not exist so this test pass.
-                Directory.Create(@"C:\Temp\");
+                Directory.CreateDirectory(@"C:\Temp\");
             }
 
             Assert.False(File.Exists(testXmlFile));
