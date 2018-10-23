@@ -159,6 +159,7 @@ namespace XmlAbstraction.Test
 
             Assert.Throws<UnauthorizedAccessException>(() => xmlObj.Save());
             Assert.False(File.Exists(testXmlFile));
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         [Fact]
@@ -172,6 +173,7 @@ namespace XmlAbstraction.Test
 
             Assert.False(File.Exists(testXmlFile));
             Assert.Throws<DirectoryNotFoundException>(() => new XmlObject(testXmlFile, testXml, true));
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         [Fact]
@@ -195,6 +197,7 @@ namespace XmlAbstraction.Test
 
             var result = xmlObj.Read(element, attribute);
             Assert.Equal(result, attributeValue);
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         // Should be able to add attribute and update that attribute if it hasnt been saved
@@ -221,6 +224,7 @@ namespace XmlAbstraction.Test
 
             var result = xmlObj.Read(element, attribute);
             Assert.Equal(result, newAttributeValue);
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         // Should not be able to update attribute that exists if the file has been loaded/saved
@@ -243,6 +247,7 @@ namespace XmlAbstraction.Test
             xmlObj.AddAttribute(element, attribute, attributeValue);
             xmlObj.Save();
             Assert.Throws<Exception>(() => xmlObj.AddAttribute(element, attribute, newAttributeValue));
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         [Fact]
@@ -265,6 +270,7 @@ namespace XmlAbstraction.Test
 
             var result = xmlObj.Read(element);
             Assert.Equal(result, elementValue);
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
 
         [Fact]
@@ -290,6 +296,26 @@ namespace XmlAbstraction.Test
 
             var result = xmlObj.Read(element);
             Assert.NotEqual(result, element);
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+        }
+
+        [Fact]
+        public void Test_Subelements()
+        {
+            var testXmlFile = @"testCreate.xml";
+
+            if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
+                File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
+
+            var xmlObj = new XmlObject(testXmlFile, testXml, true);
+            xmlObj.Save();
+            var values = new string[] {"test subelement value 1", "test subelement value 2"};
+            xmlObj.Write("testsubelements", "subelement", values);
+            xmlObj.Read("testsubelements", "subelement", null);
+            xmlObj.Save();
+            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
     }
 }
