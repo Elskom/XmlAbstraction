@@ -79,9 +79,7 @@ namespace XmlAbstraction.Test
             NoThrows(() => xmlObj.Read("test2", "test"));
             NoThrows(() => xmlObj.Read("test3", "test", null));
             NoThrows(() => xmlObj.Delete("test"));
-            Assert.ThrowsAny<ArgumentException>(() => xmlObj.Delete("test"));
             NoThrows(() => xmlObj.Delete("test2", "test"));
-            Assert.ThrowsAny<ArgumentException>(() => xmlObj.Delete("test2", "test"));
             NoThrows(() => xmlObj.Save());
             File.Delete(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
