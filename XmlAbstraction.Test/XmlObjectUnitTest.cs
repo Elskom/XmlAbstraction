@@ -25,7 +25,7 @@ namespace XmlAbstraction.Test
         public void TestClassReopenFile()
         {
             var xmlObj = new XmlObject(testXml);
-            Assert.ThrowsAny<Exception>(() => xmlObj.ReopenFile());
+            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
             var fstrm = File.Create(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
             fstrm.Write(Encoding.UTF8.GetBytes(testXml), 0, testXml.Length);
@@ -57,6 +57,7 @@ namespace XmlAbstraction.Test
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
             xmlObj = new XmlObject(testXmlNoRoot);
+
             // reopen data from a file.
             var fstrm = File.Create(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
@@ -90,23 +91,20 @@ namespace XmlAbstraction.Test
 
         [Fact]
         public void Test_contructor_root_missing_Fail()
-        {
-            Assert.Throws<System.Xml.XmlException>(() => new XmlObject(""));
-        }
+            => Assert.Throws<System.Xml.XmlException>(() => new XmlObject(""));
 
         [Fact]
         public void Test_create_file_current_directory_Pass()
         {
             var testXmlFile = @"testCreate.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.Save();
-
             Assert.True(File.Exists(testXmlFile));
         }
 
@@ -118,7 +116,6 @@ namespace XmlAbstraction.Test
         {
             // test with a real directory
             var testXmlFile = @"C:\Temp\testCreate.xml";
-
             if (File.Exists(testXmlFile))
             {
                 File.Delete(testXmlFile);
@@ -131,10 +128,8 @@ namespace XmlAbstraction.Test
             }
 
             Assert.False(File.Exists(testXmlFile));
-
-            var xmlObj = new XmlObject(testXmlFile, testXml, true);
+            var xmlObj = new XmlObject(testXmlFile, testXml);
             xmlObj.Save();
-
             Assert.True(File.Exists(testXmlFile));
             File.Delete(testXmlFile);
             Directory.Delete(@"C:\Temp\");
@@ -147,19 +142,18 @@ namespace XmlAbstraction.Test
         [Fact]
         public void Test_create_file_remote_violation_Fail()
         {
-            // test with a real directory that doesnt have write access
+            // test with a real directory that doesn't have write access
             var testXmlFile = @"C:\testCreate.xml";
-
             if (File.Exists(testXmlFile))
+            {
                 File.Delete(testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
-            var xmlObj = new XmlObject(testXmlFile, testXml, true);
-
+            var xmlObj = new XmlObject(testXmlFile, testXml);
             Assert.Throws<UnauthorizedAccessException>(() => xmlObj.Save());
             Assert.False(File.Exists(testXmlFile));
-            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            File.Delete(testXmlFile);
         }
 
         [Fact]
@@ -167,34 +161,33 @@ namespace XmlAbstraction.Test
         {
             // test with a real directory that doesnt have write access
             var testXmlFile = @"C:\nothere\testCreate.xml";
-
             if (File.Exists(testXmlFile))
+            {
                 File.Delete(testXmlFile);
+                Directory.Delete(@"C:\nothere\");
+            }
 
             Assert.False(File.Exists(testXmlFile));
-            Assert.Throws<DirectoryNotFoundException>(() => new XmlObject(testXmlFile, testXml, true));
-            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            Assert.Throws<DirectoryNotFoundException>(() => new XmlObject(testXmlFile, testXml));
         }
 
         [Fact]
         public void Test_add_attribute_Pass()
         {
             var testXmlFile = @"testAddAttribute.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var element = "TestElement";
             var attribute = "TestAttribute";
             var attributeValue = "my cool value";
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.AddAttribute(element, attribute, attributeValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-
             var result = xmlObj.Read(element, attribute);
             Assert.Equal(result, attributeValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
@@ -205,23 +198,21 @@ namespace XmlAbstraction.Test
         public void Test_add_update_attribute_Pass()
         {
             var testXmlFile = @"testAddAttribute.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var element = "TestElement";
             var attribute = "TestAttribute";
             var attributeValue = "my cool value";
             var newAttributeValue = "my new cool value";
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.AddAttribute(element, attribute, attributeValue);
             xmlObj.AddAttribute(element, attribute, newAttributeValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-
             var result = xmlObj.Read(element, attribute);
             Assert.Equal(result, newAttributeValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
@@ -232,17 +223,16 @@ namespace XmlAbstraction.Test
         public void Test_update_attribute_Fail()
         {
             var testXmlFile = @"testAddAttribute.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var element = "TestElement";
             var attribute = "TestAttribute";
             var attributeValue = "my cool value";
             var newAttributeValue = "my new cool value";
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.AddAttribute(element, attribute, attributeValue);
             xmlObj.Save();
@@ -254,20 +244,18 @@ namespace XmlAbstraction.Test
         public void Test_add_element_Pass()
         {
             var testXmlFile = @"testAddElement.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var element = "TestElement";
             var elementValue = "element value";
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.Write(element, elementValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-
             var result = xmlObj.Read(element);
             Assert.Equal(result, elementValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
@@ -277,15 +265,14 @@ namespace XmlAbstraction.Test
         public void Test_delete_file_element_Pass()
         {
             var testXmlFile = @"testDelElement.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
+            {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
+            }
 
             Assert.False(File.Exists(testXmlFile));
-
             var element = "TestElement";
             var elementValue = "element value";
-
             var xmlObj = new XmlObject(testXmlFile, testXml, true);
             xmlObj.Write(element, elementValue);
             xmlObj.Save();
@@ -293,7 +280,6 @@ namespace XmlAbstraction.Test
             xmlObj.Delete(element);
             xmlObj.Save();
             xmlObj.ReopenFile();
-
             var result = xmlObj.Read(element);
             Assert.NotEqual(result, element);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
@@ -303,7 +289,6 @@ namespace XmlAbstraction.Test
         public void Test_Subelements()
         {
             var testXmlFile = @"testCreate.xml";
-
             if (File.Exists($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile))
             {
                 File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);

@@ -65,6 +65,8 @@ namespace XmlAbstraction
         /// <param name="saveToCurrentDirectory">
         /// Controls weather to save the file to the xmlfilename param string if
         /// it is the full path or to the Current Directory if it supplies file name only.
+        /// This implies that that file is saved to <see cref="Environment.CurrentDirectory"/> +
+        /// <see cref="Path.DirectorySeparatorChar"/> prefixed before the filename.
         /// </param>
         public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToCurrentDirectory)
         {
@@ -100,9 +102,14 @@ namespace XmlAbstraction
             {
                 this.Exists = File.Exists(xmlfilename);
                 this.HasChanged = !this.Exists;
+                var fileinfo = new FileInfo(xmlfilename);
+                if (!fileinfo.Directory.Exists)
+                {
+                    throw new DirectoryNotFoundException("Directory in filename was not found.");
+                }
+
                 if (this.Exists)
                 {
-                    var fileinfo = new FileInfo(xmlfilename);
                     fileSize = fileinfo.Length;
                 }
             }

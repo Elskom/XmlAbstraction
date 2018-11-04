@@ -7,7 +7,9 @@ image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
 before_build:
-- ps: nuget restore
+- nuget restore
+- nuget install OpenCover -Version 4.6.519 -OutputDirectory packages
+- nuget install Codecov -Version 1.1.0 -OutputDirectory packages
 build:
   project: XmlAbstraction.sln
   publish_nuget: true
@@ -17,10 +19,10 @@ build:
   parallel: true
   verbosity: minimal
 test_script:
-- cmd: >-
-    "%UserProfile%\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe" -register:user -target:"%UserProfile%\.nuget\packages\xunit.runner.console\2.4.1-pre.build.4059\tools\net472\xunit.console.x86.exe" -targetargs:".\XmlAbstraction.Test\bin\Release\net472\XmlAbstraction.Test.dll -noshadow" -filter:"+[XmlAbstraction*]* -[XmlAbstraction.Test*]*" -output:".\XmlAbstraction_coverage.xml"
+- ps: >-
+    dotnet test XmlAbstraction.Test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-    "%UserProfile%\.nuget\packages\Codecov\1.1.0\tools\codecov.exe" -f ".\XmlAbstraction_coverage.xml"
+    packages\Codecov.1.1.0\tools\codecov.exe -f "XmlAbstraction.Test\coverage.opencover.xml"
 deploy:
 - provider: NuGet
   api_key:
