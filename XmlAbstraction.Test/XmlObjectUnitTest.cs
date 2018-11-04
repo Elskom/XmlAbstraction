@@ -143,7 +143,7 @@ namespace XmlAbstraction.Test
         public void Test_create_file_remote_violation_Fail()
         {
             // test with a real directory that doesn't have write access
-            var testXmlFile = @"C:\testCreate.xml";
+            var testXmlFile = @"C:\Windows\WinSxS\testCreate.xml";
             if (File.Exists(testXmlFile))
             {
                 File.Delete(testXmlFile);
@@ -153,7 +153,6 @@ namespace XmlAbstraction.Test
             var xmlObj = new XmlObject(testXmlFile, testXml);
             Assert.Throws<UnauthorizedAccessException>(() => xmlObj.Save());
             Assert.False(File.Exists(testXmlFile));
-            File.Delete(testXmlFile);
         }
 
         [Fact]
