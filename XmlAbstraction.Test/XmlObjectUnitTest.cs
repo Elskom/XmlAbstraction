@@ -297,8 +297,9 @@ namespace XmlAbstraction.Test
             xmlObj.Save();
             var values = new string[] {"test subelement value 1", "test subelement value 2"};
             xmlObj.Write("testsubelements", "subelement", values);
-            xmlObj.Read("testsubelements", "subelement", null);
+            Assert.Equal(values, xmlObj.Read("testsubelements", "subelement", null)); // if they change to null and the subelements disapear then there must be a bug.
             xmlObj.Save();
+            Assert.Equal(values, xmlObj.Read("testsubelements", "subelement", null)); // try to see if they are the same, they should as they was just saved.
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
     }
