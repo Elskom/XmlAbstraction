@@ -571,6 +571,7 @@ namespace XmlAbstraction
                         elemValues.Add(subelement.Value);
                     }
 
+                    strarray = elemValues.ToArray();
                     if (elemValues.Count() == 0)
                     {
 this.Write(parentelementname, string.Empty);
