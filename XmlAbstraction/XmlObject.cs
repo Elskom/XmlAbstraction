@@ -457,6 +457,7 @@ namespace XmlAbstraction
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
+        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string Read(string elementname)
         {
             var elem = this.Doc.Root.Element(elementname);
@@ -490,6 +491,7 @@ namespace XmlAbstraction
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
+        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string Read(string elementname, string attributename)
         {
             var elem = this.Doc.Root.Element(elementname);
@@ -545,6 +547,7 @@ namespace XmlAbstraction
         /// A array of values or a empty array of strings if
         /// there is no subelements to this element.
         /// </returns>
+        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string[] Read(string parentelementname, string elementname, object unused = null)
         {
             var elem = this.Doc.Descendants(parentelementname);
