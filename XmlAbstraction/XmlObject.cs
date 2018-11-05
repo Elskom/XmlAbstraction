@@ -452,9 +452,8 @@ namespace XmlAbstraction
         /// <summary>
         /// Reads and returns the value set for an particular XML Element.
         ///
-        /// If Element does not exist yet it will be created automatically with an empty value.
+        /// If Element does not exist yet it will be created automatically with an empty value. Automatic creations is not possible if the object is read-only though.
         /// </summary>
-        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
@@ -476,7 +475,10 @@ namespace XmlAbstraction
             }
             else
             {
-                this.Write(elementname, string.Empty);
+                if (!this.CachedXmlfilename.Equals(":memory"))
+                {
+                    this.Write(elementname, string.Empty);
+                }
                 return string.Empty;
             }
         }
@@ -485,9 +487,8 @@ namespace XmlAbstraction
         /// Reads and returns the value set for an particular XML Element attribute.
         ///
         /// If Element and the attribute does not exist yet it will be created automatically
-        /// with an empty value.
+        /// with an empty value. Automatic creations is not possible if the object is read-only though.
         /// </summary>
-        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
@@ -497,7 +498,10 @@ namespace XmlAbstraction
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null)
             {
-                this.Write(elementname, attributename, string.Empty);
+                if (!this.CachedXmlfilename.Equals(":memory"))
+                {
+                    this.Write(elementname, attributename, string.Empty);
+                }
             }
             else if (elem != null)
             {
@@ -536,8 +540,8 @@ namespace XmlAbstraction
         ///
         /// If Parent Element does not exist yet it will be created automatically
         /// with an empty value. In that case an empty string array is returned.
+        /// Automatic creations is not possible if the object is read-only though.
         /// </summary>
-        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
         /// <param name="unused">
@@ -577,12 +581,18 @@ namespace XmlAbstraction
                     strarray = elemValues.ToArray();
                     if (elemValues.Count() == 0)
                     {
-this.Write(parentelementname, string.Empty);
+                        if (!this.CachedXmlfilename.Equals(":memory"))
+                        {
+                            this.Write(parentelementname, string.Empty);
+                        }
                     }
                 }
                 else
                 {
-                    this.Write(parentelementname, string.Empty);
+                    if (!this.CachedXmlfilename.Equals(":memory"))
+                    {
+                        this.Write(parentelementname, string.Empty);
+                    }
                 }
             }
 
