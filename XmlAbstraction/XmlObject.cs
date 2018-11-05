@@ -451,12 +451,10 @@ namespace XmlAbstraction
 
         /// <summary>
         /// Reads and returns the value set for an particular XML Element.
-        ///
-        /// If Element does not exist yet it will be created automatically with an empty value. Automatic creations is not possible if the object is read-only though.
         /// </summary>
+        /// <exception cref="ArgumentException">When the element trying to be read does not exist.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
-        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string Read(string elementname)
         {
             var elem = this.Doc.Root.Element(elementname);
@@ -475,34 +473,23 @@ namespace XmlAbstraction
             }
             else
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
-                {
-                    this.Write(elementname, string.Empty);
-                }
-
-                return string.Empty;
+                throw new ArgumentException("The element trying to be read does not exist.");
             }
         }
 
         /// <summary>
         /// Reads and returns the value set for an particular XML Element attribute.
-        ///
-        /// If Element and the attribute does not exist yet it will be created automatically
-        /// with an empty value. Automatic creations is not possible if the object is read-only though.
         /// </summary>
+        /// <exception cref="ArgumentException">When the element trying to be read does not exist.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
         /// <param name="attributename">The name of the attribute to get the value of.</param>
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
-        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string Read(string elementname, string attributename)
         {
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null)
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
-                {
-                    this.Write(elementname, attributename, string.Empty);
-                }
+                throw new ArgumentException("The element trying to be read does not exist.");
             }
             else if (elem != null)
             {
@@ -538,11 +525,8 @@ namespace XmlAbstraction
 
         /// <summary>
         /// Reads and returns an array of values set for an particular XML Element's subelements.
-        ///
-        /// If Parent Element does not exist yet it will be created automatically
-        /// with an empty value. In that case an empty string array is returned.
-        /// Automatic creations is not possible if the object is read-only though.
         /// </summary>
+        /// <exception cref="ArgumentException">When the parrent element trying to be read does not exist.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
         /// <param name="unused">
@@ -552,7 +536,6 @@ namespace XmlAbstraction
         /// A array of values or a empty array of strings if
         /// there is no subelements to this element.
         /// </returns>
-        [Obsolete("The auto create for this method will be removed in a future version, if it was intended use 'TryRead' on future versions instead.")]
         public string[] Read(string parentelementname, string elementname, object unused = null)
         {
             var elem = this.Doc.Descendants(parentelementname);
@@ -582,18 +565,12 @@ namespace XmlAbstraction
                     strarray = elemValues.ToArray();
                     if (elemValues.Count() == 0)
                     {
-                        if (!this.CachedXmlfilename.Equals(":memory"))
-                        {
-                            this.Write(parentelementname, string.Empty);
-                        }
+                        throw new ArgumentException("The parrent element trying to be read does not exist.");
                     }
                 }
                 else
                 {
-                    if (!this.CachedXmlfilename.Equals(":memory"))
-                    {
-                        this.Write(parentelementname, string.Empty);
-                    }
+                    throw new ArgumentException("The parrent element trying to be read does not exist.");
                 }
             }
 
