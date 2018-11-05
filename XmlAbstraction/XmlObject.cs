@@ -451,8 +451,6 @@ namespace XmlAbstraction
 
         /// <summary>
         /// Reads and returns the value set for an particular XML Element.
-        ///
-        /// If Element does not exist yet it will be created automatically with an empty value.
         /// </summary>
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to read the value from.</param>
@@ -475,16 +473,12 @@ namespace XmlAbstraction
             }
             else
             {
-                this.Write(elementname, string.Empty);
                 return string.Empty;
             }
         }
 
         /// <summary>
         /// Reads and returns the value set for an particular XML Element attribute.
-        ///
-        /// If Element and the attribute does not exist yet it will be created automatically
-        /// with an empty value.
         /// </summary>
         /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="elementname">The element name to get the value of a attribute.</param>
@@ -493,11 +487,8 @@ namespace XmlAbstraction
         public string Read(string elementname, string attributename)
         {
             var elem = this.Doc.Root.Element(elementname);
-            if (elem == null)
-            {
-                this.Write(elementname, attributename, string.Empty);
-            }
-            else if (elem != null)
+
+            if (elem != null)
             {
                 var attribute = elem.Attribute(attributename);
                 if (attribute != null)
@@ -532,10 +523,8 @@ namespace XmlAbstraction
         /// <summary>
         /// Reads and returns an array of values set for an particular XML Element's subelements.
         ///
-        /// If Parent Element does not exist yet it will be created automatically
-        /// with an empty value. In that case an empty string array is returned.
+        /// If Parent Element does not exist yet, an empty string array is returned.
         /// </summary>
-        /// <exception cref="InvalidOperationException">When the Element does not exist in a read-only instance.</exception>
         /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
         /// <param name="elementname">The name of the subelements to get their values.</param>
         /// <param name="unused">
@@ -559,11 +548,6 @@ namespace XmlAbstraction
                 }
 
                 strarray = elemValues.ToArray();
-            }
-
-            if (elem.Count() == 0)
-            {
-                this.Write(parentelementname, string.Empty);
             }
 
             return strarray;

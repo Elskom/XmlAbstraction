@@ -50,9 +50,6 @@ namespace XmlAbstraction.Test
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test2", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Read("test3", "test31", null));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
@@ -297,7 +294,7 @@ namespace XmlAbstraction.Test
             xmlObj.Save();
             var values = new string[] {"test subelement value 1", "test subelement value 2"};
             xmlObj.Write("testsubelements", "subelement", values);
-            Assert.Equal(values, xmlObj.Read("testsubelements", "subelement", null)); // if they change to null and the subelements disapear then there must be a bug.
+            Assert.Equal(Array.Empty<string>(), xmlObj.Read("testsubelements", "subelement", null)); // changes are uncommitted, so read will return empty
             xmlObj.Save();
             Assert.Equal(values, xmlObj.Read("testsubelements", "subelement", null)); // try to see if they are the same, they should as they was just saved.
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
