@@ -279,7 +279,7 @@ namespace XmlAbstraction.Test
             xmlObj.Delete(element);
             xmlObj.Save();
             xmlObj.ReopenFile();
-            var result = xmlObj.Read(element);
+            var result = xmlObj.TryRead(element);
             Assert.NotEqual(result, element);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
