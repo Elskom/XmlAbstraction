@@ -563,7 +563,23 @@ namespace XmlAbstraction
 
             if (elem.Count() == 0)
             {
-                this.Write(parentelementname, string.Empty);
+                if (this.ElementsAdded.ContainsKey(parentelementname))
+                {
+                    var elemValues = new List<string>();
+                    foreach (var subelement in this.ElementsAdded[parentelementname].Subelements)
+                    {
+                        elemValues.Add(subelement.Value);
+                    }
+
+                    if (elemValues.Count() == 0)
+                    {
+this.Write(parentelementname, string.Empty);
+                    }
+                }
+                else
+                {
+                    this.Write(parentelementname, string.Empty);
+                }
             }
 
             return strarray;
