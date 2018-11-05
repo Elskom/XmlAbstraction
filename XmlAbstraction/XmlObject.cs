@@ -588,7 +588,7 @@ namespace XmlAbstraction
         {
             try
             {
-                return Read(elementname);
+                return this.Read(elementname);
             }
             catch (ArgumentException)
             {
@@ -614,7 +614,7 @@ namespace XmlAbstraction
         {
             try
             {
-                return Read(elementname, attributename);
+                return this.Read(elementname, attributename);
             }
             catch (ArgumentException)
             {
@@ -647,16 +647,16 @@ namespace XmlAbstraction
         {
             try
             {
-                return Read(elementname, attributename);
+                return this.Read(parentelementname, elementname, unused);
             }
             catch (ArgumentException)
             {
                 if (!this.CachedXmlfilename.Equals(":memory"))
                 {
-                    this.Write(parentelementname, attributename, string.Empty);
+                    this.Write(parentelementname, string.Empty);
                 }
 
-                return string.Empty;
+                return new string[] { };
             }
         }
 
