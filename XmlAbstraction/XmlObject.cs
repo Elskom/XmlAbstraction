@@ -586,21 +586,11 @@ namespace XmlAbstraction
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string TryRead(string elementname)
         {
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem != null
-                || this.ElementsAdded.ContainsKey(elementname)
-                || this.ElementsEdits.ContainsKey(elementname))
+            try
             {
-                // do not dare to look in _elements_deleted.
-                return elem != null
-                    ? elem.Value
-                    : (this.ElementsAdded.ContainsKey(elementname)
-                        ? this.ElementsAdded[elementname].Value
-                        : (this.ElementsEdits.ContainsKey(elementname)
-                            ? this.ElementsEdits[elementname].Value
-                            : string.Empty));
+                return Read(elementname);
             }
-            else
+            catch (ArgumentException)
             {
                 if (!this.CachedXmlfilename.Equals(":memory"))
                 {
@@ -622,44 +612,19 @@ namespace XmlAbstraction
         /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
         public string TryRead(string elementname, string attributename)
         {
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem == null)
+            try
+            {
+                return Read(elementname, attributename);
+            }
+            catch (ArgumentException)
             {
                 if (!this.CachedXmlfilename.Equals(":memory"))
                 {
                     this.Write(elementname, attributename, string.Empty);
                 }
-            }
-            else if (elem != null)
-            {
-                var attribute = elem.Attribute(attributename);
-                if (attribute != null)
-                {
-                    return attribute.Value;
-                }
-            }
-            else if (this.ElementsAdded.ContainsKey(elementname))
-            {
-                foreach (var attribute in this.ElementsAdded[elementname].Attributes)
-                {
-                    if (attribute.AttributeName.Equals(attributename))
-                    {
-                        return attribute.Value;
-                    }
-                }
-            }
-            else if (this.ElementsEdits.ContainsKey(elementname))
-            {
-                foreach (var attribute in this.ElementsEdits[elementname].Attributes)
-                {
-                    if (attribute.AttributeName.Equals(attributename))
-                    {
-                        return attribute.Value;
-                    }
-                }
-            }
 
-            return string.Empty;
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -680,49 +645,19 @@ namespace XmlAbstraction
         /// </returns>
         public string[] TryRead(string parentelementname, string elementname, object unused = null)
         {
-            var elem = this.Doc.Descendants(parentelementname);
-            var strarray = new string[] { };
-            foreach (var element in elem)
+            try
             {
-                var elements = element.Elements(elementname);
-                var elemValues = new List<string>();
-                foreach (var elemnt in elements)
-                {
-                    elemValues.Add(elemnt.Value);
-                }
-
-                strarray = elemValues.ToArray();
+                return Read(elementname, attributename);
             }
-
-            if (elem.Count() == 0)
+            catch (ArgumentException)
             {
-                if (this.ElementsAdded.ContainsKey(parentelementname))
+                if (!this.CachedXmlfilename.Equals(":memory"))
                 {
-                    var elemValues = new List<string>();
-                    foreach (var subelement in this.ElementsAdded[parentelementname].Subelements)
-                    {
-                        elemValues.Add(subelement.Value);
-                    }
+                    this.Write(parentelementname, attributename, string.Empty);
+                }
 
-                    strarray = elemValues.ToArray();
-                    if (elemValues.Count() == 0)
-                    {
-                        if (!this.CachedXmlfilename.Equals(":memory"))
-                        {
-                            this.Write(parentelementname, string.Empty);
-                        }
-                    }
-                }
-                else
-                {
-                    if (!this.CachedXmlfilename.Equals(":memory"))
-                    {
-                        this.Write(parentelementname, string.Empty);
-                    }
-                }
+                return string.Empty;
             }
-
-            return strarray;
         }
 
         /// <summary>
