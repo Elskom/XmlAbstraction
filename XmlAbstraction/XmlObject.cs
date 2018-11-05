@@ -479,6 +479,7 @@ namespace XmlAbstraction
                 {
                     this.Write(elementname, string.Empty);
                 }
+
                 return string.Empty;
             }
         }
