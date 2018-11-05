@@ -50,9 +50,9 @@ namespace XmlAbstraction.Test
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
-            xmlObj.Read("test");
-            xmlObj.Read("test2", "test");
-            xmlObj.Read("test3", "test31", null);
+            xmlObj.TryRead("test");
+            xmlObj.TryRead("test2", "test");
+            xmlObj.TryRead("test3", "test31", null);
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
             Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
@@ -70,15 +70,15 @@ namespace XmlAbstraction.Test
             NoThrows(() => xmlObj.Write("test", "test"));
             NoThrows(() => xmlObj.Write("test2", "test", "test"));
             NoThrows(() => xmlObj.Write("test3", "test", new string[] { "test1", "test2", "test3" }));
-            xmlObj.Read("test");
-            xmlObj.Read("test2", "test");
-            xmlObj.Read("test3", "test", null);
-            xmlObj.Read("test4");
+            xmlObj.TryRead("test");
+            xmlObj.TryRead("test2", "test");
+            xmlObj.TryRead("test3", "test", null);
+            xmlObj.TryRead("test4");
             NoThrows(() => xmlObj.ReopenFile());
             NoThrows(() => xmlObj.Write("test", "testnew"));
-            xmlObj.Read("test");
-            xmlObj.Read("test2", "test");
-            xmlObj.Read("test3", "test", null);
+            xmlObj.TryRead("test");
+            xmlObj.TryRead("test2", "test");
+            xmlObj.TryRead("test3", "test", null);
             NoThrows(() => xmlObj.Delete("test"));
             NoThrows(() => xmlObj.Delete("test2", "test"));
             NoThrows(() => xmlObj.Save());
@@ -187,7 +187,7 @@ namespace XmlAbstraction.Test
             xmlObj.AddAttribute(element, attribute, attributeValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-            var result = xmlObj.Read(element, attribute);
+            var result = xmlObj.TryRead(element, attribute);
             Assert.Equal(result, attributeValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
@@ -212,7 +212,7 @@ namespace XmlAbstraction.Test
             xmlObj.AddAttribute(element, attribute, newAttributeValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-            var result = xmlObj.Read(element, attribute);
+            var result = xmlObj.TryRead(element, attribute);
             Assert.Equal(result, newAttributeValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
@@ -255,7 +255,7 @@ namespace XmlAbstraction.Test
             xmlObj.Write(element, elementValue);
             xmlObj.Save();
             xmlObj.ReopenFile();
-            var result = xmlObj.Read(element);
+            var result = xmlObj.TryRead(element);
             Assert.Equal(result, elementValue);
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
@@ -297,9 +297,9 @@ namespace XmlAbstraction.Test
             xmlObj.Save();
             var values = new string[] {"test subelement value 1", "test subelement value 2"};
             xmlObj.Write("testsubelements", "subelement", values);
-            Assert.NotEqual(Array.Empty<string>(), xmlObj.Read("testsubelements", "subelement", null));
+            Assert.NotEqual(Array.Empty<string>(), xmlObj.TryRead("testsubelements", "subelement", null));
             xmlObj.Save();
-            Assert.Equal(values, xmlObj.Read("testsubelements", "subelement", null));
+            Assert.Equal(values, xmlObj.TryRead("testsubelements", "subelement", null));
             File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}" + testXmlFile);
         }
     }

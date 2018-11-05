@@ -601,6 +601,154 @@ namespace XmlAbstraction
         }
 
         /// <summary>
+        /// Reads and returns the value set for an particular XML Element.
+        ///
+        /// If Element does not exist yet it will be created automatically with an empty value. Automatic creations is not possible if the object is read-only though.
+        /// </summary>
+        /// <param name="elementname">The element name to read the value from.</param>
+        /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
+        public string TryRead(string elementname)
+        {
+            var elem = this.Doc.Root.Element(elementname);
+            if (elem != null
+                || this.ElementsAdded.ContainsKey(elementname)
+                || this.ElementsEdits.ContainsKey(elementname))
+            {
+                // do not dare to look in _elements_deleted.
+                return elem != null
+                    ? elem.Value
+                    : (this.ElementsAdded.ContainsKey(elementname)
+                        ? this.ElementsAdded[elementname].Value
+                        : (this.ElementsEdits.ContainsKey(elementname)
+                            ? this.ElementsEdits[elementname].Value
+                            : string.Empty));
+            }
+            else
+            {
+                if (!this.CachedXmlfilename.Equals(":memory"))
+                {
+                    this.Write(elementname, string.Empty);
+                }
+
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Reads and returns the value set for an particular XML Element attribute.
+        ///
+        /// If Element and the attribute does not exist yet it will be created automatically
+        /// with an empty value. Automatic creations is not possible if the object is read-only though.
+        /// </summary>
+        /// <param name="elementname">The element name to get the value of a attribute.</param>
+        /// <param name="attributename">The name of the attribute to get the value of.</param>
+        /// <returns>The value of the input element or <see cref="string.Empty"/>.</returns>
+        public string TryRead(string elementname, string attributename)
+        {
+            var elem = this.Doc.Root.Element(elementname);
+            if (elem == null)
+            {
+                if (!this.CachedXmlfilename.Equals(":memory"))
+                {
+                    this.Write(elementname, attributename, string.Empty);
+                }
+            }
+            else if (elem != null)
+            {
+                var attribute = elem.Attribute(attributename);
+                if (attribute != null)
+                {
+                    return attribute.Value;
+                }
+            }
+            else if (this.ElementsAdded.ContainsKey(elementname))
+            {
+                foreach (var attribute in this.ElementsAdded[elementname].Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename))
+                    {
+                        return attribute.Value;
+                    }
+                }
+            }
+            else if (this.ElementsEdits.ContainsKey(elementname))
+            {
+                foreach (var attribute in this.ElementsEdits[elementname].Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename))
+                    {
+                        return attribute.Value;
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Reads and returns an array of values set for an particular XML Element's subelements.
+        ///
+        /// If Parent Element does not exist yet it will be created automatically
+        /// with an empty value. In that case an empty string array is returned.
+        /// Automatic creations is not possible if the object is read-only though.
+        /// </summary>
+        /// <param name="parentelementname">The name of the parrent element of the subelement(s).</param>
+        /// <param name="elementname">The name of the subelements to get their values.</param>
+        /// <param name="unused">
+        /// A unused paramiter to avoid a compiler error from this overload.
+        /// </param>
+        /// <returns>
+        /// A array of values or a empty array of strings if
+        /// there is no subelements to this element.
+        /// </returns>
+        public string[] TryRead(string parentelementname, string elementname, object unused = null)
+        {
+            var elem = this.Doc.Descendants(parentelementname);
+            var strarray = new string[] { };
+            foreach (var element in elem)
+            {
+                var elements = element.Elements(elementname);
+                var elemValues = new List<string>();
+                foreach (var elemnt in elements)
+                {
+                    elemValues.Add(elemnt.Value);
+                }
+
+                strarray = elemValues.ToArray();
+            }
+
+            if (elem.Count() == 0)
+            {
+                if (this.ElementsAdded.ContainsKey(parentelementname))
+                {
+                    var elemValues = new List<string>();
+                    foreach (var subelement in this.ElementsAdded[parentelementname].Subelements)
+                    {
+                        elemValues.Add(subelement.Value);
+                    }
+
+                    strarray = elemValues.ToArray();
+                    if (elemValues.Count() == 0)
+                    {
+                        if (!this.CachedXmlfilename.Equals(":memory"))
+                        {
+                            this.Write(parentelementname, string.Empty);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!this.CachedXmlfilename.Equals(":memory"))
+                    {
+                        this.Write(parentelementname, string.Empty);
+                    }
+                }
+            }
+
+            return strarray;
+        }
+
+        /// <summary>
         /// Deletes an xml element using the element name.
         /// Can also delete not only the parrent element but also subelements with it.
         /// </summary>
