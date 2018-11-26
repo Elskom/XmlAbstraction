@@ -15,7 +15,7 @@ build:
   publish_nuget: true
   publish_nuget_symbols: true
   # this warns anyway for netcore and netstandard projects.
-  # include_nuget_references: true
+  include_nuget_references: true
   parallel: true
   verbosity: minimal
 test_script:
