@@ -10,7 +10,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
     <Copyright>Copyright 2018</Copyright>
     <PackageTags>XML</PackageTags>
@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageReleaseNotes>Renamed all Read methods to TryRead and added new Read methods that does not call any of the Write methods.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added reference assemblies, Benchmarks, and other fixes.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
   </PropertyGroup>
 
