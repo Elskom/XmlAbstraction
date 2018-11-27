@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XmlAbstraction\XmlAbstraction.csproj" />
+    <ProjectReference Include="..\src\XmlAbstraction.csproj" />
   </ItemGroup>
 
 </Project>

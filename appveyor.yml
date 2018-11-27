@@ -11,11 +11,11 @@ before_build:
 - nuget install OpenCover -Version 4.6.519 -OutputDirectory packages
 - nuget install Codecov -Version 1.1.0 -OutputDirectory packages
 build:
-  project: XmlAbstraction.sln
+  project: src/XmlAbstraction/XmlAbstraction.sln
   publish_nuget: true
   publish_nuget_symbols: true
   # this warns anyway for netcore and netstandard projects.
-  include_nuget_references: true
+  # include_nuget_references: true
   parallel: true
   verbosity: minimal
 test_script:
