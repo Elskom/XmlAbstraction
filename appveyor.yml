@@ -7,7 +7,9 @@ image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
 before_build:
+- cd src/XmlAbstraction/
 - nuget restore
+- cd ../../
 - nuget install OpenCover -Version 4.6.519 -OutputDirectory packages
 - nuget install Codecov -Version 1.1.0 -OutputDirectory packages
 build:
