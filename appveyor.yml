@@ -24,7 +24,7 @@ test_script:
 - ps: >-
     cd src/XmlAbstraction/
 
-    dotnet test XmlAbstraction.Test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    dotnet test test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
     cd ../../
 
