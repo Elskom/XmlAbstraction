@@ -22,9 +22,13 @@ build:
   verbosity: minimal
 test_script:
 - ps: >-
+    cd src/XmlAbstraction/
+
     dotnet test XmlAbstraction.Test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-    packages\Codecov.1.1.0\tools\codecov.exe -f "XmlAbstraction.Test\coverage.opencover.xml"
+    cd ../../
+
+    packages\Codecov.1.1.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
 deploy:
 - provider: NuGet
   api_key:
