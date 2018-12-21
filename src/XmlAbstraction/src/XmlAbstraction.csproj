@@ -95,7 +95,7 @@
 
   <ItemGroup>
     <!-- Add reference binaries -->
-    <TfmSpecificPackageFile Include="$(OutputPath)\$(TargetFramework)\ref\$(ProjectName).dll">
+    <TfmSpecificPackageFile Include="$(OutputPath)\ref\$(ProjectName).dll">
       <PackagePath>ref/$(TargetFramework)</PackagePath>
     </TfmSpecificPackageFile>
   </ItemGroup>
