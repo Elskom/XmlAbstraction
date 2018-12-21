@@ -19,6 +19,7 @@
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
     <PackageReleaseNotes>Added reference assemblies, Benchmarks and other fixes.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
+    <Deterministic>true</Deterministic>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
@@ -90,6 +91,13 @@
     <Reference Include="System" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Add reference binaries -->
+    <TfmSpecificPackageFile Include="$(OutputPath)\$(TargetFramework)\ref\$(ProjectName).dll">
+      <PackagePath>ref/$(TargetFramework)</PackagePath>
+    </TfmSpecificPackageFile>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
