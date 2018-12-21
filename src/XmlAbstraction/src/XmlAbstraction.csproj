@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
     <Copyright>Copyright 2018</Copyright>
     <PackageTags>XML</PackageTags>
@@ -17,8 +17,9 @@
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageReleaseNotes>Added .NET Core 3.0 and 2.2 to target frameworks.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added reference assemblies, Benchmarks and other fixes.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <!-- Conditionally obtain references for the .NET Framework 4.0 target -->

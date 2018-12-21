@@ -1,4 +1,4 @@
-version: 1.2.1.0-alpha{build}
+version: 1.2.2.0-alpha{build}
 branches:
   only:
   - master
@@ -15,7 +15,8 @@ before_build:
 build:
   project: src/XmlAbstraction/XmlAbstraction.sln
   publish_nuget: true
-  publish_nuget_symbols: true
+  # this seems to make tag builds fail now.
+  # publish_nuget_symbols: true
   # this warns anyway for netcore and netstandard projects.
   # include_nuget_references: true
   parallel: true
