@@ -854,7 +854,7 @@ namespace XmlAbstraction
 
         private static void UnreferencedParameter<T>(T t)
         {
-            if(t == null)
+            if (t == null)
             {
                 T d = t;
             }
