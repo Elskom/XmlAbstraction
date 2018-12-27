@@ -541,6 +541,7 @@ namespace XmlAbstraction
         /// </returns>
         public string[] Read(string parentelementname, string elementname, object unused = null)
         {
+            UnreferencedParameter(unused);
             var elem = this.Doc.Descendants(parentelementname);
             var strarray = new string[] { };
             foreach (var element in elem)
@@ -848,6 +849,14 @@ namespace XmlAbstraction
                         this.HasChanged = false;
                     }
                 }
+            }
+        }
+
+        private static void UnreferencedParameter<T>(T t)
+        {
+            if(t == null)
+            {
+                T d = t;
             }
         }
 
