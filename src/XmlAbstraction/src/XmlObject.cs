@@ -149,24 +149,27 @@ namespace XmlAbstraction
         {
             get
             {
-                var outxmlData = new MemoryStream();
-                this.Doc.Save(outxmlData);
-                var outXmlBytes = outxmlData.ToArray();
-                outxmlData.Dispose();
-
-                // ensure file length is not 0.
-                if (this.Exists != (
-                    File.Exists(this.CachedXmlfilename) &&
-                    Encoding.UTF8.GetString(File.ReadAllBytes(this.CachedXmlfilename)).Length > 0))
+                using (var outxmlData = new MemoryStream())
                 {
-                    // refresh Exists so it always works.
-                    this.Exists = File.Exists(this.CachedXmlfilename);
+                    this.Doc.Save(outxmlData);
+                    var outXmlBytes = outxmlData.ToArray();
+
+                    // ensure file length is not 0.
+                    if (this.Exists != (
+                        File.Exists(this.CachedXmlfilename) &&
+                        Encoding.UTF8.GetString(
+                            File.ReadAllBytes(
+                                this.CachedXmlfilename)).Length > 0))
+                    {
+                        // refresh Exists so it always works.
+                        this.Exists = File.Exists(this.CachedXmlfilename);
+                    }
+
+                    var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
+
+                    // cannot change externally if it does not exist on file yet.
+                    return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
                 }
-
-                var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
-
-                // cannot change externally if it does not exist on file yet.
-                return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
             }
         }
 
