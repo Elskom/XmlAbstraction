@@ -11,7 +11,7 @@
     <Company />
     <Version>1.2.2</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
-    <Copyright>Copyright 2018</Copyright>
+    <Copyright>Copyright (c) 2018-2019</Copyright>
     <PackageTags>XML</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
@@ -19,7 +19,6 @@
     <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
     <PackageReleaseNotes>Added reference assemblies, Benchmarks and other fixes.</PackageReleaseNotes>
     <PublishDocumentationFile>true</PublishDocumentationFile>
-    <Deterministic>true</Deterministic>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
@@ -28,13 +27,6 @@
     <Reference Include="System" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Add reference binaries -->
-    <TfmSpecificPackageFile Include="$(OutputPath)\ref\$(ProjectName).dll">
-      <PackagePath>ref/$(TargetFramework)</PackagePath>
-    </TfmSpecificPackageFile>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
