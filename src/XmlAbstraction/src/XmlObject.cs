@@ -856,7 +856,7 @@ namespace XmlAbstraction
         {
             if (t == null)
             {
-                T d = t;
+                var d = t;
             }
         }
 
