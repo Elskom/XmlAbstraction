@@ -38,7 +38,7 @@ namespace XmlAbstraction
         /// If the file does not exists it will be created.
         /// </summary>
         /// <param name="xmlfilename">
-        /// The name of the XML File to load into the XMLObject.
+        /// The name of the XML File to load into the <see cref="XmlObject"/>.
         /// </param>
         /// <param name="fallbackxmlcontent">
         /// The fallback content string to write into the fallback XML File
@@ -56,7 +56,7 @@ namespace XmlAbstraction
         /// If the file does not exists it will be created.
         /// </summary>
         /// <param name="xmlfilename">
-        /// The name of the XML File to load into the XMLObject.
+        /// The name of the XML File to load into the <see cref="XmlObject"/>.
         /// </param>
         /// <param name="fallbackxmlcontent">
         /// The fallback content string to write into the fallback XML File
@@ -194,6 +194,39 @@ namespace XmlAbstraction
             else
             {
                 throw new InvalidOperationException("This instance is read-only.");
+            }
+        }
+
+        /// <summary>
+        /// Adds an Element to the <see cref="XmlObject"/> but verifies it does not exist first.
+        /// </summary>
+        /// <exception cref="System.Exception">
+        /// Thrown if element already exists in the <see cref="XmlObject"/>.
+        /// </exception>
+        public void AddElement(string elementname, string value)
+        {
+            var elem = this.Doc.Root.Element(elementname);
+            if (elem == null)
+            {
+                var xMLElementData = new XmlElementData
+                {
+                    Attributes = null,
+                    Value = value,
+                };
+                if (!this.ElementsAdded.ContainsKey(elementname))
+                {
+                    this.ElementsAdded.Add(elementname, xMLElementData);
+                }
+                else
+                {
+                    this.ElementsAdded[elementname] = xMLElementData;
+                }
+
+                this.HasChanged = true;
+            }
+            else
+            {
+                throw new Exception("Element already exists.");
             }
         }
 
@@ -857,41 +890,6 @@ namespace XmlAbstraction
             if (t == null)
             {
                 var d = t;
-            }
-        }
-
-        // Summary:
-        //   Adds an Element to the XmlObject but verifies it does not exist first.
-        //
-        // Exceptions:
-        //   System.Exception:
-        //     Thrown if element already exists in the XMLObject.
-        //   System.ObjectDisposedException
-        //     XMLOblect is disposed.
-        private void AddElement(string elementname, string value)
-        {
-            var elem = this.Doc.Root.Element(elementname);
-            if (elem == null)
-            {
-                var xMLElementData = new XmlElementData
-                {
-                    Attributes = null,
-                    Value = value,
-                };
-                if (!this.ElementsAdded.ContainsKey(elementname))
-                {
-                    this.ElementsAdded.Add(elementname, xMLElementData);
-                }
-                else
-                {
-                    this.ElementsAdded[elementname] = xMLElementData;
-                }
-
-                this.HasChanged = true;
-            }
-            else
-            {
-                throw new Exception("Element already exists.");
             }
         }
 
