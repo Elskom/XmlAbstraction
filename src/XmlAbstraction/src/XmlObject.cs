@@ -198,10 +198,12 @@ namespace XmlAbstraction
         }
 
         /// <summary>
-        /// Adds an Element to the <see cref="XmlObject"/> but verifies it does not exist first.
+        /// Adds an Element to the <see cref="XmlObject"/> but verifies it does not exist in the xml file first.
         /// </summary>
+        /// <param name="elementname">The name of the element to create.</param>
+        /// <param name="value">The value for the element.</param>
         /// <exception cref="System.Exception">
-        /// Thrown if element already exists in the <see cref="XmlObject"/>.
+        /// Thrown if the element already exists in the <see cref="XmlObject"/>.
         /// </exception>
         public void AddElement(string elementname, string value)
         {
