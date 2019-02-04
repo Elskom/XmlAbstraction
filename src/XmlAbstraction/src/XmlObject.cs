@@ -1,6 +1,7 @@
-// <copyright file="XmlObject.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
+// Copyright (c) 2018-2019, AraHaan
+// https://github.com/AraHaan/
+// All rights reserved.
+// license: MIT, see LICENSE for more details.
 
 namespace XmlAbstraction
 {
@@ -65,8 +66,8 @@ namespace XmlAbstraction
         /// <param name="saveToCurrentDirectory">
         /// Controls weather to save the file to the xmlfilename param string if
         /// it is the full path or to the Current Directory if it supplies file name only.
-        /// This implies that that file is saved to <see cref="Environment.CurrentDirectory"/> +
-        /// <see cref="Path.DirectorySeparatorChar"/> prefixed before the filename.
+        /// This implies that that file is saved to the fully qualified path of the
+        /// current working directory prefixed before the filename.
         /// </param>
         public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToCurrentDirectory)
         {
@@ -83,10 +84,10 @@ namespace XmlAbstraction
                     throw new DirectoryNotFoundException("Directory in filename was not found.");
                 }
 
-                if (!xmlfilename.Contains(Environment.CurrentDirectory) &&
-                    directory.Parent.FullName == Environment.CurrentDirectory)
+                if (!xmlfilename.Contains(Directory.GetCurrentDirectory()) &&
+                    directory.Parent.FullName == Directory.GetCurrentDirectory())
                 {
-                    xmlfilename = Environment.CurrentDirectory + Path.DirectorySeparatorChar + xmlfilename;
+                    xmlfilename = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + xmlfilename;
                 }
             }
 
@@ -202,7 +203,7 @@ namespace XmlAbstraction
         /// </summary>
         /// <param name="elementname">The name of the element to create.</param>
         /// <param name="value">The value for the element.</param>
-        /// <exception cref="System.Exception">
+        /// <exception cref="Exception">
         /// Thrown if the element already exists in the <see cref="XmlObject"/>.
         /// </exception>
         public void AddElement(string elementname, string value)
@@ -920,24 +921,6 @@ namespace XmlAbstraction
                     }
                 }
             }
-        }
-
-        private class XmlAttributeData
-        {
-            internal string AttributeName { get; set; } = string.Empty;
-
-            internal string Value { get; set; } = string.Empty;
-        }
-
-        private class XmlElementData
-        {
-            internal string Name { get; set; } = string.Empty;
-
-            internal List<XmlElementData> Subelements { get; set; } = null;
-
-            internal List<XmlAttributeData> Attributes { get; set; } = new List<XmlAttributeData>();
-
-            internal string Value { get; set; } = string.Empty;
         }
     }
 }

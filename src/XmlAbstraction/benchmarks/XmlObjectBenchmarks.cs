@@ -8,10 +8,11 @@ namespace XmlAbstraction.Benchmark
 
     [ClrJob(baseline: true), CoreJob, MonoJob, CoreRtJob]
     [RPlotExporter, RankColumn]
+    [InProcess]
     public class XmlObjectBenchmarks
     {
         private XmlObject xmlObj;
-        private string XmlFile = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}BenchmarkTest.xml";
+        private readonly string XmlFile = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}BenchmarkTest.xml";
         
         [Params(@"<?xml version=""1.0"" encoding=""utf-8"" ?><test></test>", @"<?xml version=""1.0"" encoding=""utf-8"" ?><test><test1 TestAttribute1=""0"">test</test1><test2 TestAttribute1=""0"">test2</test2></test>")]
         public string InputXml;
@@ -19,22 +20,76 @@ namespace XmlAbstraction.Benchmark
         [GlobalSetup]
         public void Setup()
         {
-            using (var fstrm = File.Create(XmlFile))
+            using (var fstrm = File.Create(this.XmlFile))
             {
-                fstrm.Write(Encoding.UTF8.GetBytes(InputXml), 0, InputXml.Length);
+                fstrm.Write(Encoding.UTF8.GetBytes(this.InputXml), 0, this.InputXml.Length);
             }
 
-            xmlObj = new XmlObject(XmlFile, InputXml);
+            this.xmlObj = new XmlObject(this.XmlFile, this.InputXml);
         }
 
         [Benchmark]
         public void ReopenFile()
-            => xmlObj.ReopenFile();
+            => this.xmlObj.ReopenFile();
 
-        // TODO: Benchmark every method in the XmlAbstraction library.
+        [Benchmark]
+        public void AddElement()
+            => this.xmlObj.AddElement("test3", "test3");
+
+        [Benchmark]
+        public void AddAttribute()
+            => this.xmlObj.AddAttribute("test3", "TestAttribute1", "0");
+
+        [Benchmark]
+        public void Write()
+            => this.xmlObj.Write("test4", "test4");
+
+        [Benchmark]
+        public void Write2()
+            => this.xmlObj.Write("test4", "TestAttribute1", "0");
+
+        [Benchmark]
+        public void Write3()
+            => this.xmlObj.Write("test5", "testholder", new string[] { "test1", "test2", "test3", "test4" });
+
+        [Benchmark]
+        public void Read()
+            => this.xmlObj.Read("test3");
+
+        [Benchmark]
+        public void Read2()
+            => this.xmlObj.Read("test3", "TestAttribute1");
+
+        [Benchmark]
+        public void Read3()
+            => this.xmlObj.Read("test5", "testholder", null);
+
+        [Benchmark]
+        public void TryRead()
+            => this.xmlObj.TryRead("test6");
+
+        [Benchmark]
+        public void TryRead2()
+            => this.xmlObj.TryRead("test7", "TestAttribute1");
+
+        [Benchmark]
+        public void TryRead3()
+            => this.xmlObj.TryRead("test8", "testholder", null);
+
+        [Benchmark]
+        public void Delete()
+            => this.xmlObj.Delete("test6");
+
+        [Benchmark]
+        public void Delete2()
+            => this.xmlObj.Delete("test7", "TestAttribute1");
 
         [Benchmark]
         public void Save()
-            => xmlObj.Save();
+            => this.xmlObj.Save();
+
+        [GlobalCleanup]
+        public void Cleanup()
+            => File.Delete(this.XmlFile);
     }
 }
