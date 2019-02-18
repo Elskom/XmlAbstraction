@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>XmlAbstraction</RootNamespace>
     <AssemblyName>XmlAbstraction</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
     <Version>1.2.2</Version>
@@ -16,10 +16,11 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AraHaan/XmlAbstraction/</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/AraHaan/XmlAbstraction/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes>Added reference assemblies, Benchmarks and other changes.</PackageReleaseNotes>
     <PublishDocumentationFile>false</PublishDocumentationFile>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <NoWarn>$(NoWarn);NU5104;NU5118</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +43,25 @@
     <!-- Add debugging symbols. -->
     <TfmSpecificPackageFile Include="$(OutputPath)/$(ProjectName).pdb">
       <PackagePath>lib/$(TargetFramework)</PackagePath>
+    </TfmSpecificPackageFile>
+    <!-- Add source code. -->
+    <TfmSpecificPackageFile Include="$(ProjectPath)">
+      <PackagePath>src/$(ProjectName)/$(ProjectFileName)</PackagePath>
+    </TfmSpecificPackageFile>
+    <TfmSpecificPackageFile Include="$(ProjectDir)/$(ProjectName)/">
+      <PackagePath>src/$(ProjectName)/$(ProjectName)/</PackagePath>
+    </TfmSpecificPackageFile>
+    <TfmSpecificPackageFile Include="$(ProjectDir)/../../../README.md">
+      <PackagePath>src/$(ProjectName)/README.md</PackagePath>
+    </TfmSpecificPackageFile>
+    <TfmSpecificPackageFile Include="$(ProjectDir)/stylecop.json">
+      <PackagePath>src/$(ProjectName)/stylecop.json</PackagePath>
+    </TfmSpecificPackageFile>
+    <TfmSpecificPackageFile Include="$(ProjectDir)/$(ProjectName).ruleset">
+      <PackagePath>src/$(ProjectName)/$(ProjectName).ruleset</PackagePath>
+    </TfmSpecificPackageFile>
+    <TfmSpecificPackageFile Include="$(ProjectDir)/../global.json">
+      <PackagePath>src/$(ProjectName)/global.json</PackagePath>
     </TfmSpecificPackageFile>
   </ItemGroup>
   

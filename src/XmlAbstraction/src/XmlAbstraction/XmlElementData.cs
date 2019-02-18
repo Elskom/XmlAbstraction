@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018-2019, AraHaan
+// Copyright (c) 2018-2019, AraHaan
 // https://github.com/AraHaan/
 // All rights reserved.
 // license: MIT, see LICENSE for more details.
