@@ -263,3 +263,5 @@ __pycache__/
 # BenchmarkDotNet Atrifacts
 **/BenchmarkDotNet.Artifacts/
 **/BenchmarkTest.xml
+
+GitAssemblyInfo.cs
