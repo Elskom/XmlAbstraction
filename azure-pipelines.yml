@@ -54,6 +54,10 @@ jobs:
       dotnet build --configuration Release
       cd ../../
     displayName: Build
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      arguments: '--configuration Release'
   - powershell: |
       cd src/XmlAbstraction/
       dotnet test test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
