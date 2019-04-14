@@ -8,6 +8,10 @@ jobs:
   pool: Hosted
   timeoutInMinutes: 240
   steps:
+  - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: '4.9.4'
+      checkLatest: true
   - powershell: |
       Write-Host "Installing .NET Core 3.0.100-preview-010184 SDK..." -ForegroundColor Cyan
       Write-Host "Downloading..."
