@@ -52,7 +52,7 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: 'build'
-      projects: 'src/XmlAbstraction/'
+      projects: 'src/XmlAbstraction/XmlAbstraction.sln'
       arguments: '--configuration Release'
     displayName: 'build'
   - powershell: |
