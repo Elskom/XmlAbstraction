@@ -48,8 +48,11 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
+      solution: 'src/XmlAbstraction/XmlAbstraction.sln'
   - powershell: |
+      cd src/XmlAbstraction/
       dotnet build --configuration Release
+      cd ../../
     displayName: Build
   - powershell: |
       cd src/XmlAbstraction/
