@@ -3,6 +3,7 @@
 // All rights reserved.
 // license: MIT, see LICENSE for more details.
 
+#if WITH_XDOCUMENT_EXTENSIONS
 namespace XmlAbstraction
 {
     using System.IO;
@@ -30,3 +31,4 @@ namespace XmlAbstraction
         }
     }
 }
+#endif
