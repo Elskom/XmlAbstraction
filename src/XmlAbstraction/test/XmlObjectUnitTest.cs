@@ -91,7 +91,7 @@ namespace XmlAbstraction.Test
 
         [Fact]
         public void Test_contructor_root_missing_Fail()
-            => Assert.Throws<System.Xml.XmlException>(() => new XmlObject(""));
+            => Assert.Throws<ArgumentException>(() => new XmlObject(""));
 
         [Fact]
         public void Test_create_file_current_directory_Pass()
