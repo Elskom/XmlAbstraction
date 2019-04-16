@@ -141,7 +141,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('..\..\..\..\GitInformation\src\GitInformation\GitInformation.csproj')">
-    <PackageReference Include="GitInformation">
+    <PackageReference Include="AraHaan.GitInformation">
       <Version>1.0.0</Version>
     </PackageReference>
   </ItemGroup>
