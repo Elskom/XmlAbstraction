@@ -75,7 +75,7 @@ before_build:
 
     nuget install OpenCover -Version 4.6.519 -OutputDirectory packages
 
-    nuget install Codecov -Version 1.1.0 -OutputDirectory packages
+    nuget install Codecov -Version 1.4.0 -OutputDirectory packages
 
 build:
   project: src/XmlAbstraction/XmlAbstraction.sln
@@ -94,7 +94,7 @@ test_script:
 
     cd ../../
 
-    packages\Codecov.1.1.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
+    packages\Codecov.1.4.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
 deploy:
 - provider: NuGet
   api_key:
