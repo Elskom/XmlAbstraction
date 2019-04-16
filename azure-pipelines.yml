@@ -91,7 +91,7 @@ jobs:
   - powershell: |
       nuget sources Add -Name "Generic Roslyn Analyzers" -Source https://dotnet.myget.org/F/roslyn-analyzers/api/v3/index.json
       nuget install OpenCover -Version 4.6.519 -OutputDirectory packages
-      nuget install Codecov -Version 1.1.0 -OutputDirectory packages
+      nuget install Codecov -Version 1.4.0 -OutputDirectory packages
     displayName: 'Before Build'
   - task: NuGetCommand@2
     inputs:
@@ -107,7 +107,7 @@ jobs:
       cd src/XmlAbstraction/
       dotnet test test\ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       cd ../../
-      packages\Codecov.1.1.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
+      packages\Codecov.1.4.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
     displayName: Test
 # TODO: deploy to nuget when there is a tag build? Or have AppVeyor do the packaging to nuget? MyGet support too???
 #  - task: PublishPipelineArtifact@0
