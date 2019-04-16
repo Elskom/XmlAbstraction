@@ -13,6 +13,24 @@ jobs:
       versionSpec: '4.9.4'
       checkLatest: true
   - powershell: |
+      Write-Host "Installing .NET Core 2.1.603 SDK..." -ForegroundColor Cyan
+      Write-Host "Downloading..."
+      $exePath = "$env:TEMP\dotnet-sdk-2.1.603-win-x64.exe"
+      (New-Object Net.WebClient).DownloadFile('https://download.visualstudio.microsoft.com/download/pr/78863fe4-e032-433d-bbc3-f62d6df616ec/b075f5b4bc001b14465e27fdb1c21f07/dotnet-sdk-2.1.603-win-x64.exe', $exePath)
+      Write-Host "Installing..."
+      cmd /c start /wait "$exePath" /quiet /norestart
+      del $exePath
+      Write-Host "Installed" -ForegroundColor Green
+      Write-Host "Installing .NET Core 2.1.10 runtime..." -ForegroundColor Cyan
+      Write-Host "Downloading..."
+      $exePath = "$env:TEMP\dotnet-runtime-2.1.10-win-x64.exe"
+      (New-Object Net.WebClient).DownloadFile('https://download.visualstudio.microsoft.com/download/pr/caaf63d6-4929-4094-a9d4-38d8bd566cb3/12bbfd1272b0f935c3742e8c97257a82/dotnet-runtime-2.1.10-win-x64.exe', $exePath)
+      Write-Host "Installing..."
+      cmd /c start /wait "$exePath" /quiet /norestart
+      del $exePath
+      Write-Host "Installed" -ForegroundColor Green
+    displayName: 'Download and install .NET Core 2.1.'
+  - powershell: |
       Write-Host "Installing .NET Core 3.0.100-preview-010431 SDK..." -ForegroundColor Cyan
       Write-Host "Downloading..."
       $exePath = "$env:TEMP\dotnet-sdk-3.0.100-preview3-010431-win-x64.exe"
