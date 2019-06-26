@@ -43,7 +43,7 @@ namespace XmlAbstraction
         /// If the file does not exists it will be created.
         /// </summary>
         /// <exception cref="ArgumentException">
-        /// When <paramref name="fallbackxmlcontent"/> is <see langword="null"/> or <see cref="string.Empty"/>.
+        /// When <paramref name="fallbackxmlcontent"/> or <paramref name="xmlfilename"/> is <see langword="null"/> or <see cref="string.Empty"/>.
         /// </exception>
         /// <param name="xmlfilename">
         /// The name of the XML File to load into the <see cref="XmlObject"/>.
@@ -64,7 +64,7 @@ namespace XmlAbstraction
         /// If the file does not exists it will be created.
         /// </summary>
         /// <exception cref="ArgumentException">
-        /// When <paramref name="fallbackxmlcontent"/> is <see langword="null"/> or <see cref="string.Empty"/>.
+        /// When <paramref name="fallbackxmlcontent"/> or <paramref name="xmlfilename"/> is <see langword="null"/> or <see cref="string.Empty"/>.
         /// </exception>
         /// <param name="xmlfilename">
         /// The name of the XML File to load into the <see cref="XmlObject"/>.
@@ -81,6 +81,11 @@ namespace XmlAbstraction
         /// </param>
         public XmlObject(string xmlfilename, string fallbackxmlcontent, bool saveToCurrentDirectory)
         {
+            if (string.IsNullOrEmpty(xmlfilename))
+            {
+                throw new ArgumentException("'xmlfilename' cannot be null or empty.", nameof(xmlfilename));
+            }
+
             if (string.IsNullOrEmpty(fallbackxmlcontent))
             {
                 throw new ArgumentException("'fallbackxmlcontent' cannot be null or empty.", nameof(fallbackxmlcontent));
