@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
     <Copyright>Copyright (c) 2018-2019</Copyright>
     <PackageTags>XML</PackageTags>
