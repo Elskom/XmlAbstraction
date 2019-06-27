@@ -87,6 +87,7 @@ namespace XmlAbstraction.Test
             xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj = new XmlObject($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml", testXml, true);
+            Assert.ThrowsAny<ArgumentException>(() => xmlObj = new XmlObject(null, testXml, true));
         }
 
         [Fact]
