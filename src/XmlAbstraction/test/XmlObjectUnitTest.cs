@@ -170,7 +170,6 @@ namespace XmlAbstraction.Test
             Assert.False(File.Exists(testXmlFile));
             Assert.Throws<DirectoryNotFoundException>(() => new XmlObject(testXmlFile, testXml));
             Assert.Throws<DirectoryNotFoundException>(() => new XmlObject($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}nothere{Path.DirectorySeparatorChar}testCreate.xml", testXml, true));
-            File.Delete($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}nothere{Path.DirectorySeparatorChar}testCreate.xml");
         }
 
         [Fact]
