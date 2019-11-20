@@ -4,9 +4,25 @@ namespace XmlAbstraction.Benchmark
     using System.IO;
     using System.Text;
     using BenchmarkDotNet.Attributes;
+    using BenchmarkDotNet.Jobs;
     using XmlAbstraction;
 
-    [ClrJob(baseline: true), CoreJob, MonoJob, CoreRtJob]
+    // hope this change actually works.
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net461, baseline: true)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net462, baseline: true)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net47, baseline: true)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net471, baseline: true)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net472, baseline: true)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Mono)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.NetCoreApp20)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.NetCoreApp21)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.NetCoreApp22)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.NetCoreApp30)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.CoreRt20)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.CoreRt21)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.CoreRt22)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.CoreRt30)]
+    // [ClrJob(baseline: true), CoreJob, MonoJob, CoreRtJob]
     [RPlotExporter, RankColumn]
     [InProcess]
     public class XmlObjectBenchmarks
