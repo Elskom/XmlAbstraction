@@ -9,9 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: .NET Core build
+    - name: .NET Core setup
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
-    - name: Build with dotnet
+    - name: .NET Core build
       run: dotnet build src/XmlAbstraction/XmlAbstraction.sln --configuration Release
