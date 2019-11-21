@@ -13,19 +13,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
+    - uses: warrenbuckley/Setup-Nuget@v1
     - name: .NET Core pre-build
       run: >-
-        dotnet nuget sources Add -Name "Generic Roslyn Analyzers" -Source https://dotnet.myget.org/F/roslyn-analyzers/api/v3/index.json
+        nuget install OpenCover -Version 4.7.922 -OutputDirectory packages
         
-        cd src/XmlAbstraction/
-        
-        dotnet nuget restore
-        
-        cd ../../
-        
-        dotnet nuget install OpenCover -Version 4.7.922 -OutputDirectory packages
-        
-        dotnet nuget install Codecov -Version 1.4.0 -OutputDirectory packages
+        nuget install Codecov -Version 1.4.0 -OutputDirectory packages
         
     - name: .NET Core build
       run: dotnet build src/XmlAbstraction/XmlAbstraction.sln --configuration Release
