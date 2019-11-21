@@ -35,10 +35,10 @@ jobs:
         packages\Codecov.1.9.0\tools\codecov.exe -t $env:CODECOV_TOKEN -f "src/XmlAbstraction/test/coverage.opencover.xml"
         
     # experiment with uploading the *.nupkgs.
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
-      with:
+    # - name: Upload artifact
+    #   uses: actions/upload-artifact@v1.0.0
+    #   with:
         # Artifact name
-        name: '*.nupkg'
+    #     name: '*.nupkg'
         # Directory containing files to upload
-        path: src\XmlAbstraction\src\bin\Any CPU\Release
+    #     path: src\XmlAbstraction\src\bin\Any CPU\Release
