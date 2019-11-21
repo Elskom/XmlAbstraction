@@ -18,7 +18,7 @@ jobs:
       run: >-
         nuget install OpenCover -Version 4.7.922 -OutputDirectory packages
         
-        nuget install Codecov -Version 1.4.0 -OutputDirectory packages
+        nuget install Codecov -Version 1.9.0 -OutputDirectory packages
         
     - name: .NET Core build
       run: dotnet build src/XmlAbstraction/XmlAbstraction.sln --configuration Release
@@ -30,4 +30,4 @@ jobs:
         
         cd ../../
         
-        packages\Codecov.1.4.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
+        packages\Codecov.1.9.0\tools\codecov.exe -f "src/XmlAbstraction/test/coverage.opencover.xml"
