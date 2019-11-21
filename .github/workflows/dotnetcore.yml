@@ -33,11 +33,10 @@ jobs:
         packages\Codecov.1.9.0\tools\codecov.exe -t "c42c5efb-e57d-4644-a35f-1013bcfaee8f" -f "src/XmlAbstraction/test/coverage.opencover.xml"
         
     # experiment with uploading the *.nupkgs.
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+    - name: Upload the artifacts
+      uses: skx/github-action-publish-binaries@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        # Artifact name
-        name: '*.nupkg'
-        # Directory containing files to upload
-        path: src\XmlAbstraction\src\bin\Any CPU\Release
+        args: 'src/XmlAbstraction/src/bin/Any CPU/Release/XmlAbstraction.*.nupkg'
         
