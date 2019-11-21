@@ -484,7 +484,7 @@ namespace XmlAbstraction
                 }
 
                 var elem2 = this.Doc.Descendants(parentelementname);
-                if (elem2.Count() > 0)
+                if (elem2.Any())
                 {
                     // for Save() to work.
                     this.Delete(parentelementname);
@@ -609,7 +609,11 @@ namespace XmlAbstraction
         {
             UnreferencedParameter(unused);
             var elem = this.Doc.Descendants(parentelementname);
+#if NO_ARRAY_EMPTY
             var strarray = new string[] { };
+#else
+            var strarray = Array.Empty<string>();
+#endif
             foreach (var element in elem)
             {
                 var elements = element.Elements(elementname);
@@ -622,7 +626,7 @@ namespace XmlAbstraction
                 strarray = elemValues.ToArray();
             }
 
-            if (elem.Count() == 0)
+            if (!elem.Any())
             {
                 if (!this.ElementsAdded.ContainsKey(parentelementname))
                 {
@@ -637,7 +641,7 @@ namespace XmlAbstraction
                     }
 
                     strarray = elemValues.ToArray();
-                    if (elemValues.Count() == 0)
+                    if (!elemValues.Any())
                     {
                         throw new ArgumentException("The subelement trying to be read does not exist.");
                     }
@@ -726,7 +730,11 @@ namespace XmlAbstraction
                     this.Write(parentelementname, string.Empty);
                 }
 
+#if NO_ARRAY_EMPTY
                 return new string[] { };
+#else
+                return Array.Empty<string>();
+#endif
             }
         }
 
@@ -931,7 +939,7 @@ namespace XmlAbstraction
         //   Writes Added subelements to the XML file.
         private void SaveAddedSubelements(XElement xElement, XmlElementData elemdata)
         {
-            if (elemdata.Name != string.Empty)
+            if (!string.IsNullOrEmpty(elemdata.Name))
             {
                 var elem = new XElement(elemdata.Name, elemdata.Value);
                 xElement.Add(elem);
