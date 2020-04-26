@@ -119,7 +119,7 @@ namespace XmlAbstraction
 
             long fileSize = 0;
             this.CachedXmlfilename = xmlfilename;
-            if (!xmlfilename.Equals(":memory"))
+            if (!xmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 this.Exists = File.Exists(xmlfilename);
                 this.HasChanged = !this.Exists;
@@ -135,7 +135,7 @@ namespace XmlAbstraction
                 }
             }
 
-            this.Doc = (fileSize > 0) ? XDocument.Load(xmlfilename) : XDocument.Parse(fallbackxmlcontent);
+            this.Doc = fileSize > 0 ? XDocument.Load(xmlfilename) : XDocument.Parse(fallbackxmlcontent);
         }
 
         private object ObjLock { get; set; }
@@ -162,7 +162,7 @@ namespace XmlAbstraction
         //
         //   This is just a property to minimize saving code on checking
         //   if the xml file changed externally.
-        private bool Exists { get; set; } = false;
+        private bool Exists { get; set; }
 
         // Summary:
         //   Gets a value indicating whether the XML file was externally edited.
@@ -190,7 +190,7 @@ namespace XmlAbstraction
                     var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
 
                     // cannot change externally if it does not exist on file yet.
-                    return dataOnFile == null ? false : !dataOnFile.SequenceEqual(outXmlBytes) ? true : false;
+                    return dataOnFile != null && !dataOnFile.SequenceEqual(outXmlBytes);
                 }
             }
         }
@@ -198,7 +198,7 @@ namespace XmlAbstraction
         // Summary:
         //   Gets or sets a value indicating whether the internal data in this class has changed, e.g.
         //   pending edits, deletions, or additions to the xml file.
-        private bool HasChanged { get; set; } = false;
+        private bool HasChanged { get; set; }
 
         /// <summary>
         /// Reopens from the file name used to construct the object,
@@ -208,7 +208,7 @@ namespace XmlAbstraction
         /// <exception cref="InvalidOperationException">Cannot reopen on read-only instances.</exception>
         public void ReopenFile()
         {
-            if (!this.CachedXmlfilename.Equals(":memory"))
+            if (!this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 this.Save();
                 this.Doc = XDocument.Load(this.CachedXmlfilename);
@@ -271,7 +271,7 @@ namespace XmlAbstraction
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Attribute is removed if the input value is null.", Scope = "member")]
         public void AddAttribute(string elementname, string attributename, object attributevalue)
         {
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -379,7 +379,7 @@ namespace XmlAbstraction
         /// <param name="value">The value for the element.</param>
         public void Write(string elementname, string value)
         {
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -394,9 +394,9 @@ namespace XmlAbstraction
                     {
                         Attributes = this.ElementsAdded.ContainsKey(elementname)
                             ? this.ElementsAdded[elementname].Attributes
-                            : (this.ElementsEdits.ContainsKey(elementname)
+                            : this.ElementsEdits.ContainsKey(elementname)
                                 ? this.ElementsEdits[elementname].Attributes
-                                : null),
+                                : null,
                         Value = value,
                         Name = elementname,
                     };
@@ -443,7 +443,7 @@ namespace XmlAbstraction
         /// <param name="attributevalue">The value of the attribute to use.</param>
         public void Write(string elementname, string attributename, string attributevalue)
         {
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -471,7 +471,7 @@ namespace XmlAbstraction
                 throw new ArgumentNullException(nameof(values));
             }
 
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -537,11 +537,11 @@ namespace XmlAbstraction
                 // do not dare to look in _elements_deleted.
                 return elem != null
                     ? elem.Value
-                    : (this.ElementsAdded.ContainsKey(elementname)
+                    : this.ElementsAdded.ContainsKey(elementname)
                         ? this.ElementsAdded[elementname].Value
-                        : (this.ElementsEdits.ContainsKey(elementname)
+                        : this.ElementsEdits.ContainsKey(elementname)
                             ? this.ElementsEdits[elementname].Value
-                            : string.Empty));
+                            : string.Empty;
             }
         }
 
@@ -572,7 +572,7 @@ namespace XmlAbstraction
             {
                 foreach (var attribute in this.ElementsAdded[elementname].Attributes)
                 {
-                    if (attribute.AttributeName.Equals(attributename))
+                    if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                     {
                         return attribute.Value;
                     }
@@ -582,7 +582,7 @@ namespace XmlAbstraction
             {
                 foreach (var attribute in this.ElementsEdits[elementname].Attributes)
                 {
-                    if (attribute.AttributeName.Equals(attributename))
+                    if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                     {
                         return attribute.Value;
                     }
@@ -666,7 +666,7 @@ namespace XmlAbstraction
             }
             catch (ArgumentException)
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
+                if (!this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
                 {
                     this.Write(elementname, string.Empty);
                 }
@@ -692,7 +692,7 @@ namespace XmlAbstraction
             }
             catch (ArgumentException)
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
+                if (!this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
                 {
                     this.Write(elementname, attributename, string.Empty);
                 }
@@ -725,7 +725,7 @@ namespace XmlAbstraction
             }
             catch (ArgumentException)
             {
-                if (!this.CachedXmlfilename.Equals(":memory"))
+                if (!this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
                 {
                     this.Write(parentelementname, string.Empty);
                 }
@@ -747,7 +747,7 @@ namespace XmlAbstraction
         /// <param name="elementname">The element name of the element to delete.</param>
         public void Delete(string elementname)
         {
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -784,7 +784,7 @@ namespace XmlAbstraction
         /// <param name="attributename">The name of the attribute to delete.</param>
         public void Delete(string elementname, string attributename)
         {
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 throw new InvalidOperationException("This instance is read-only.");
             }
@@ -795,7 +795,7 @@ namespace XmlAbstraction
                 {
                     foreach (var attribute in this.ElementsAdded[elementname].Attributes)
                     {
-                        if (attribute.AttributeName.Equals(attributename))
+                        if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                         {
                             _ = this.ElementsAdded[elementname].Attributes.Remove(attribute);
                         }
@@ -805,7 +805,7 @@ namespace XmlAbstraction
                 {
                     foreach (var attribute in this.ElementsEdits[elementname].Attributes)
                     {
-                        if (attribute.AttributeName.Equals(attributename))
+                        if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                         {
                             _ = this.ElementsEdits[elementname].Attributes.Remove(attribute);
                         }
@@ -842,7 +842,7 @@ namespace XmlAbstraction
         public void Save()
         {
             // do not save in memory xml. It should be read only.
-            if (this.CachedXmlfilename.Equals(":memory"))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
                 return;
             }

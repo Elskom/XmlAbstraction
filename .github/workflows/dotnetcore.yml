@@ -15,11 +15,7 @@ jobs:
         dotnet-version: 3.0.100
     - uses: warrenbuckley/Setup-Nuget@v1
     - name: .NET Core pre-build
-      run: >-
-        nuget install OpenCover -Version 4.7.922 -OutputDirectory packages
-        
-        nuget install Codecov -Version 1.9.0 -OutputDirectory packages
-        
+      run: dotnet tool install --global Codecov.Tool
     - name: .NET Core build
       run: dotnet build src/XmlAbstraction/XmlAbstraction.sln --configuration Release
     - name: .NET Core test
@@ -32,7 +28,7 @@ jobs:
         
         cd ../../
         
-        packages\Codecov.1.9.0\tools\codecov.exe -t $env:CODECOV_TOKEN -f "src/XmlAbstraction/test/coverage.opencover.xml"
+        codecov -t $env:CODECOV_TOKEN -f "src/XmlAbstraction/test/coverage.opencover.xml"
         
     # experiment with uploading the *.nupkgs.
     # - name: Upload artifact
