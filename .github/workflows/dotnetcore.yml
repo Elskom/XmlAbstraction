@@ -12,7 +12,7 @@ jobs:
     - name: .NET Core setup
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.100
+        dotnet-version: 5.0.100-preview.3.20163.3
     - uses: warrenbuckley/Setup-Nuget@v1
     - name: .NET Core pre-build
       run: dotnet tool install --global Codecov.Tool
