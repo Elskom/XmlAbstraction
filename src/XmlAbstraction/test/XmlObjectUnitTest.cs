@@ -25,7 +25,7 @@ namespace XmlAbstraction.Test
         public void TestClassReopenFile()
         {
             var xmlObj = new XmlObject(testXml);
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
+            Assert.Throws<InvalidOperationException>(() => xmlObj.ReopenFile());
             var fstrm = File.Create(
                 $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml");
             fstrm.Write(Encoding.UTF8.GetBytes(testXml), 0, testXml.Length);
@@ -46,16 +46,16 @@ namespace XmlAbstraction.Test
             var xmlObj = new XmlObject(testXml);
 
             // test to make sure that InvalidOperationException is thrown.
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.AddAttribute("test4", "test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.AddAttribute("test4", "test", "test"));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.Write("test", "test"));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.Write("test2", "test", "test"));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.Write("test3", "test31", new string[] { "test1", "test2", "test3" }));
             xmlObj.TryRead("test");
             xmlObj.TryRead("test2", "test");
             xmlObj.TryRead("test3", "test31", null);
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
-            Assert.ThrowsAny<InvalidOperationException>(() => xmlObj.ReopenFile());
+            Assert.Throws<InvalidOperationException>(() => xmlObj.Delete("test"));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.Delete("test2", "test"));
+            Assert.Throws<InvalidOperationException>(() => xmlObj.ReopenFile());
             xmlObj = new XmlObject(testXmlNoRoot);
 
             // reopen data from a file.
@@ -87,12 +87,12 @@ namespace XmlAbstraction.Test
             xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj = new XmlObject($"{Path.DirectorySeparatorChar}test.xml", testXml, true);
             xmlObj = new XmlObject($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.xml", testXml, true);
-            Assert.ThrowsAny<ArgumentException>(() => xmlObj = new XmlObject(null, testXml, true));
+            Assert.Throws<ArgumentNullException>(() => xmlObj = new XmlObject(null, testXml, true));
         }
 
         [Fact]
         public void Test_contructor_root_missing_Fail()
-            => Assert.Throws<ArgumentException>(() => new XmlObject(""));
+            => Assert.Throws<ArgumentNullException>(() => new XmlObject(""));
 
         [Fact]
         public void Test_create_file_current_directory_Pass()

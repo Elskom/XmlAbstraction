@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
+    <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard2.0;netstandard2.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>XmlAbstraction</RootNamespace>
     <AssemblyName>XmlAbstraction</AssemblyName>
@@ -9,9 +10,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>AraHaan</Authors>
     <Company />
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
+    <Version Condition="'$(GITHUB_ACTIONS)' == 'true' AND !$(GITHUB_REF.StartsWith('refs/tags/'))">$(Version)-preview-$(GITHUB_RUN_ID)</Version>
     <Description>A library that contains a System.Xml and System.Xml.Linq abstraction class.</Description>
-    <Copyright>Copyright (c) 2018-2019</Copyright>
+    <Copyright>Copyright (c) 2018-2020</Copyright>
     <PackageTags>XML</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/AraHaan/XmlAbstraction/</RepositoryUrl>
@@ -25,15 +27,17 @@
     <AssemblyOriginatorKeyFile>AraHaan.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <PackageOutputPath Condition="'$(SolutionName)' == 'build_all_packages'">$(MSBuildThisFileDirectory)..\..\..\..\artifacts\</PackageOutputPath>
-    <DefineConstants Condition="$(TargetFramework.StartsWith('net40')) OR $(TargetFramework.StartsWith('net45'))">NO_ARRAY_EMPTY</DefineConstants>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
     <IncludeSymbols>true</IncludeSymbols>
+    <!-- Optional: Include source code in the symbol package (.snupkg) -->
+    <IncludeSource>true</IncludeSource>
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -57,7 +61,7 @@
     <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <OutputPath>bin\Any CPU\Debug\</OutputPath>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <ErrorReport>send</ErrorReport>
   </PropertyGroup>
@@ -66,12 +70,8 @@
     <WarningsAsErrors>NU1605</WarningsAsErrors>
     <OutputPath>bin\Any CPU\Release\</OutputPath>
     <ErrorReport>send</ErrorReport>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard1')) OR $(TargetFramework.StartsWith('netcoreapp1'))">
-    <DefineConstants>$(DefineConstants);WITH_XDOCUMENT_EXTENSIONS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -83,7 +83,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0-beta1.20255.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -104,14 +104,29 @@
     <PackageReference Condition="!$(TargetFramework.StartsWith('netcoreapp')) AND !$(TargetFramework.StartsWith('netstandard'))" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\..\..\..\GitInformation\src\GitInformation\AraHaan.GitInformation.csproj')">
+  <ItemGroup Condition="Exists('..\..\..\..\GitInformation\src\GitInformation\AraHaan.GitInformation.csproj') AND '$(SolutionName)' == 'build_all_packages'">
     <ProjectReference Include="..\..\..\..\GitInformation\src\GitInformation\AraHaan.GitInformation.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="!Exists('..\..\..\..\GitInformation\src\GitInformation\AraHaan.GitInformation.csproj')">
+  <ItemGroup Condition="!Exists('..\..\..\..\GitInformation\src\GitInformation\AraHaan.GitInformation.csproj') OR '$(SolutionName)' != 'build_all_packages'">
     <PackageReference Include="AraHaan.GitInformation">
-      <Version>1.0.1</Version>
+      <Version>1.0.2-preview-97172757</Version>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="GitBuildInfo" BeforeTargets="PrepareForBuild">

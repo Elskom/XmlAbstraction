@@ -1,8 +1,9 @@
 # XmlAbstraction
 
 [![NuGet Badge](https://buildstats.info/nuget/XmlAbstraction?includePreReleases=true)](https://www.nuget.org/packages/XmlAbstraction/)
-![Build Status](https://github.com/AraHaan/XmlAbstraction/workflows/.NET%20Core/badge.svg)
-[![Build status](https://ci.appveyor.com/api/projects/status/ylh90kp0r0e5b68w?svg=true)](https://ci.appveyor.com/project/AraHaan/xmlabstraction)
+![Build Status](https://github.com/AraHaan/XmlAbstraction/workflows/.NET%20Core%20%28build%20%26%20publish%20pre-release%29/badge.svg)
+![Build Status](https://github.com/AraHaan/XmlAbstraction/workflows/.NET%20Core%20%28build%20%26%20publish%20release%29/badge.svg)
+![Build Status](https://github.com/AraHaan/XmlAbstraction/workflows/.NET%20Core%20%28build%20pull%20request%29/badge.svg)
 [![codecov](https://codecov.io/gh/AraHaan/XmlAbstraction/branch/master/graph/badge.svg)](https://codecov.io/gh/AraHaan/XmlAbstraction)
 
 A library that contains a System.Xml and System.Xml.Linq abstraction class.

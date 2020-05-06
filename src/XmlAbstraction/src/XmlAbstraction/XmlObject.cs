@@ -12,6 +12,7 @@ namespace XmlAbstraction
     using System.Linq;
     using System.Text;
     using System.Xml.Linq;
+    using XmlAbstraction.Properties;
 
     /// <summary>
     /// Class that allows Reading and Writing of XML Files.
@@ -63,7 +64,7 @@ namespace XmlAbstraction
         ///
         /// If the file does not exists it will be created.
         /// </summary>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="ArgumentNullException">
         /// When <paramref name="fallbackxmlcontent"/> or <paramref name="xmlfilename"/> is <see langword="null"/> or <see cref="string.Empty"/>.
         /// </exception>
         /// <param name="xmlfilename">
@@ -83,12 +84,12 @@ namespace XmlAbstraction
         {
             if (string.IsNullOrEmpty(xmlfilename))
             {
-                throw new ArgumentException("'xmlfilename' cannot be null or empty.", nameof(xmlfilename));
+                throw new ArgumentNullException(nameof(xmlfilename) /*, "'xmlfilename' cannot be null or empty."*/);
             }
 
             if (string.IsNullOrEmpty(fallbackxmlcontent))
             {
-                throw new ArgumentException("'fallbackxmlcontent' cannot be null or empty.", nameof(fallbackxmlcontent));
+                throw new ArgumentNullException(nameof(fallbackxmlcontent) /*, "'fallbackxmlcontent' cannot be null or empty."*/);
             }
 
             this.ObjLock = new object();
@@ -101,17 +102,25 @@ namespace XmlAbstraction
                 var directory = new DirectoryInfo(xmlfilename);
                 if (!directory.Parent.Exists)
                 {
-                    throw new DirectoryNotFoundException("Directory in filename was not found.");
+                    throw new DirectoryNotFoundException(Resources.XmlObject_Directory_Not_Found);
                 }
 
+#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48 || NETCOREAPP2_0 || NETSTANDARD2_0
                 if (!xmlfilename.Contains(Directory.GetCurrentDirectory()) &&
+#else
+                if (!xmlfilename.Contains(Directory.GetCurrentDirectory(), StringComparison.Ordinal) &&
+#endif
                     directory.Parent.FullName == Directory.GetCurrentDirectory())
                 {
                     xmlfilename = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + xmlfilename;
                 }
             }
 
+#if NET40 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48 || NETCOREAPP2_0 || NETSTANDARD2_0
             if (!fallbackxmlcontent.Contains("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"))
+#else
+            if (!fallbackxmlcontent.Contains("<?xml version=\"1.0\" encoding=\"utf-8\" ?>", StringComparison.Ordinal))
+#endif
             {
                 // insert root element at begginning of string data.
                 fallbackxmlcontent = fallbackxmlcontent.Insert(0, "<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
@@ -126,7 +135,7 @@ namespace XmlAbstraction
                 var fileinfo = new FileInfo(xmlfilename);
                 if (!fileinfo.Directory.Exists)
                 {
-                    throw new DirectoryNotFoundException("Directory in filename was not found.");
+                    throw new DirectoryNotFoundException(Resources.XmlObject_Directory_Not_Found);
                 }
 
                 if (this.Exists)
@@ -171,27 +180,30 @@ namespace XmlAbstraction
         {
             get
             {
-                using (var outxmlData = new MemoryStream())
+                if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
                 {
-                    this.Doc.Save(outxmlData);
-                    var outXmlBytes = outxmlData.ToArray();
-
-                    // ensure file length is not 0.
-                    if (this.Exists != (
-                        File.Exists(this.CachedXmlfilename) &&
-                        Encoding.UTF8.GetString(
-                            File.ReadAllBytes(
-                                this.CachedXmlfilename)).Length > 0))
-                    {
-                        // refresh Exists so it always works.
-                        this.Exists = File.Exists(this.CachedXmlfilename);
-                    }
-
-                    var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
-
-                    // cannot change externally if it does not exist on file yet.
-                    return dataOnFile != null && !dataOnFile.SequenceEqual(outXmlBytes);
+                    return false;
                 }
+
+                using var outxmlData = new MemoryStream();
+                this.Doc.Save(outxmlData);
+                var outXmlBytes = outxmlData.ToArray();
+
+                // ensure file length is not 0.
+                if (this.Exists != (
+                    File.Exists(this.CachedXmlfilename) &&
+                    Encoding.UTF8.GetString(
+                        File.ReadAllBytes(
+                            this.CachedXmlfilename)).Length > 0))
+                {
+                    // refresh Exists so it always works.
+                    this.Exists = File.Exists(this.CachedXmlfilename);
+                }
+
+                var dataOnFile = this.Exists ? File.ReadAllBytes(this.CachedXmlfilename) : null;
+
+                // cannot change externally if it does not exist on file yet.
+                return dataOnFile != null && !dataOnFile.SequenceEqual(outXmlBytes);
             }
         }
 
@@ -208,15 +220,13 @@ namespace XmlAbstraction
         /// <exception cref="InvalidOperationException">Cannot reopen on read-only instances.</exception>
         public void ReopenFile()
         {
-            if (!this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                this.Save();
-                this.Doc = XDocument.Load(this.CachedXmlfilename);
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
-            else
-            {
-                throw new InvalidOperationException("This instance is read-only.");
-            }
+
+            this.Save();
+            this.Doc = XDocument.Load(this.CachedXmlfilename);
         }
 
         /// <summary>
@@ -227,12 +237,20 @@ namespace XmlAbstraction
         /// <exception cref="Exception">
         /// Thrown if the element already exists in the <see cref="XmlObject"/>.
         /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// When called from a read-only instance.
+        /// </exception>
         public void AddElement(string elementname, string value)
         {
+            if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
+            }
+
             var elem = this.Doc.Root.Element(elementname);
             if (elem != null)
             {
-                throw new Exception("Element already exists.");
+                throw new Exception(Resources.XmlObject_Element_Already_Exists);
             }
             else
             {
@@ -273,99 +291,97 @@ namespace XmlAbstraction
         {
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
-            else
+
+            var elem = this.Doc.Root.Element(elementname);
+            if (elem == null)
             {
-                var elem = this.Doc.Root.Element(elementname);
-                if (elem == null)
-                {
-                    this.Write(elementname, string.Empty);
-                }
+                this.Write(elementname, string.Empty);
+            }
 
-                if (this.ElementsAdded.ContainsKey(elementname))
+            if (this.ElementsAdded.ContainsKey(elementname))
+            {
+                var xmleldata = this.ElementsAdded[elementname];
+                if (xmleldata.Attributes != null)
                 {
-                    var xmleldata = this.ElementsAdded[elementname];
-                    if (xmleldata.Attributes != null)
-                    {
-                        foreach (var attribute in xmleldata.Attributes)
-                        {
-                            if (attribute.AttributeName.Equals(attributename))
-                            {
-                                attribute.Value = attributevalue.ToString();
-                            }
-                        }
-                    }
-
-                    var xMLAttributeData = new XmlAttributeData
-                    {
-                        AttributeName = attributename,
-                        Value = attributevalue.ToString(),
-                    };
-                    xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                    xmleldata.Attributes.Add(xMLAttributeData);
-                }
-                else if (this.ElementsEdits.ContainsKey(elementname))
-                {
-                    XmlAttributeData xMLAttributeData;
-                    var edit = false;
-                    var attributeIndex = 0;
-                    var xmleldata = this.ElementsEdits[elementname];
                     foreach (var attribute in xmleldata.Attributes)
                     {
-                        if (attribute.AttributeName.Equals(attributename))
+                        if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                         {
-                            edit = true;
-                            attributeIndex = xmleldata.Attributes.IndexOf(attribute);
+                            attribute.Value = attributevalue.ToString();
                         }
                     }
+                }
 
-                    xMLAttributeData = new XmlAttributeData
+                var xMLAttributeData = new XmlAttributeData
+                {
+                    AttributeName = attributename,
+                    Value = attributevalue.ToString(),
+                };
+                xmleldata.Attributes ??= new List<XmlAttributeData>();
+                xmleldata.Attributes.Add(xMLAttributeData);
+            }
+            else if (this.ElementsEdits.ContainsKey(elementname))
+            {
+                XmlAttributeData xMLAttributeData;
+                var edit = false;
+                var attributeIndex = 0;
+                var xmleldata = this.ElementsEdits[elementname];
+                foreach (var attribute in xmleldata.Attributes)
+                {
+                    if (attribute.AttributeName.Equals(attributename, StringComparison.Ordinal))
                     {
-                        AttributeName = attributename,
-                        Value = attributevalue.ToString(),
-                    };
-                    xmleldata.Attributes = xmleldata.Attributes ?? new List<XmlAttributeData>();
-                    if (!edit && attributevalue != null)
-                    {
-                        xmleldata.Attributes.Add(xMLAttributeData);
+                        edit = true;
+                        attributeIndex = xmleldata.Attributes.IndexOf(attribute);
                     }
-                    else
-                    {
-                        xMLAttributeData = xmleldata.Attributes[attributeIndex];
-                        xMLAttributeData.Value = attributevalue.ToString();
-                    }
+                }
+
+                xMLAttributeData = new XmlAttributeData
+                {
+                    AttributeName = attributename,
+                    Value = attributevalue.ToString(),
+                };
+                xmleldata.Attributes ??= new List<XmlAttributeData>();
+                if (!edit && attributevalue != null)
+                {
+                    xmleldata.Attributes.Add(xMLAttributeData);
                 }
                 else
                 {
-                    if (attributevalue != null)
+                    xMLAttributeData = xmleldata.Attributes[attributeIndex];
+                    xMLAttributeData.Value = attributevalue.ToString();
+                }
+            }
+            else
+            {
+                if (attributevalue != null)
+                {
+                    if (elem.Attribute(attributename) != null)
                     {
-                        if (elem.Attribute(attributename) != null)
+                        throw new Exception(Resources.XmlObject_Attribute_Already_Exists);
+                    }
+                    else
+                    {
+                        var xmleldata = new XmlElementData
                         {
-                            throw new Exception("Attribute already exists.");
-                        }
-                        else
+                            Name = elementname,
+                        };
+                        var xMLAttributeData = new XmlAttributeData
                         {
-                            var xmleldata = new XmlElementData
-                            {
-                                Name = elementname,
-                            };
-                            var xMLAttributeData = new XmlAttributeData
-                            {
-                                AttributeName = attributename,
-                                Value = attributevalue.ToString(),
-                            };
-                            xmleldata.Attributes = new List<XmlAttributeData>
+                            AttributeName = attributename,
+                            Value = attributevalue.ToString(),
+                        };
+                        xmleldata.Attributes = new List<XmlAttributeData>
                             {
                                 xMLAttributeData,
                             };
-                            this.ElementsEdits.Add(elementname, xmleldata);
-                        }
+                        this.ElementsEdits.Add(elementname, xmleldata);
                     }
                 }
-
-                this.HasChanged = true;
             }
+
+            this.HasChanged = true;
         }
 
         /// <summary>
@@ -381,49 +397,47 @@ namespace XmlAbstraction
         {
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
-            else
-            {
-                var elem = this.Doc.Root.Element(elementname);
-                if (elem != null
-                    || this.ElementsAdded.ContainsKey(elementname)
-                    || this.ElementsEdits.ContainsKey(elementname))
-                {
-                    var xMLElementData = new XmlElementData
-                    {
-                        Attributes = this.ElementsAdded.ContainsKey(elementname)
-                            ? this.ElementsAdded[elementname].Attributes
-                            : this.ElementsEdits.ContainsKey(elementname)
-                                ? this.ElementsEdits[elementname].Attributes
-                                : null,
-                        Value = value,
-                        Name = elementname,
-                    };
-                    if (this.ElementsAdded.ContainsKey(elementname))
-                    {
-                        // modify this key, do not put into _elements_edits dictonary.
-                        this.ElementsAdded[elementname] = xMLElementData;
-                    }
-                    else
-                    {
-                        if (this.ElementsEdits.ContainsKey(elementname))
-                        {
-                            // edit the collection whenever this changes.
-                            this.ElementsEdits[elementname] = xMLElementData;
-                        }
-                        else
-                        {
-                            this.ElementsEdits.Add(elementname, xMLElementData);
-                        }
-                    }
 
-                    this.HasChanged = true;
+            var elem = this.Doc.Root.Element(elementname);
+            if (elem != null
+                || this.ElementsAdded.ContainsKey(elementname)
+                || this.ElementsEdits.ContainsKey(elementname))
+            {
+                var xMLElementData = new XmlElementData
+                {
+                    Attributes = this.ElementsAdded.ContainsKey(elementname)
+                        ? this.ElementsAdded[elementname].Attributes
+                        : this.ElementsEdits.ContainsKey(elementname)
+                            ? this.ElementsEdits[elementname].Attributes
+                            : null,
+                    Value = value,
+                    Name = elementname,
+                };
+                if (this.ElementsAdded.ContainsKey(elementname))
+                {
+                    // modify this key, do not put into _elements_edits dictonary.
+                    this.ElementsAdded[elementname] = xMLElementData;
                 }
                 else
                 {
-                    this.AddElement(elementname, value);
+                    if (this.ElementsEdits.ContainsKey(elementname))
+                    {
+                        // edit the collection whenever this changes.
+                        this.ElementsEdits[elementname] = xMLElementData;
+                    }
+                    else
+                    {
+                        this.ElementsEdits.Add(elementname, xMLElementData);
+                    }
                 }
+
+                this.HasChanged = true;
+            }
+            else
+            {
+                this.AddElement(elementname, value);
             }
         }
 
@@ -445,12 +459,10 @@ namespace XmlAbstraction
         {
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
-            else
-            {
-                this.AddAttribute(elementname, attributename, attributevalue);
-            }
+
+            this.AddAttribute(elementname, attributename, attributevalue);
         }
 
         /// <summary>
@@ -473,7 +485,7 @@ namespace XmlAbstraction
 
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
             else
             {
@@ -530,7 +542,7 @@ namespace XmlAbstraction
                 && !this.ElementsAdded.ContainsKey(elementname)
                 && !this.ElementsEdits.ContainsKey(elementname))
             {
-                throw new ArgumentException("The element trying to be read does not exist.");
+                throw new ArgumentException(Resources.XmlObject_Element_Does_Not_Exist);
             }
             else
             {
@@ -558,7 +570,7 @@ namespace XmlAbstraction
             var elem = this.Doc.Root.Element(elementname);
             if (elem == null)
             {
-                throw new ArgumentException("The element trying to be read does not exist.");
+                throw new ArgumentException(Resources.XmlObject_Element_Does_Not_Exist);
             }
             else if (elem != null)
             {
@@ -609,7 +621,7 @@ namespace XmlAbstraction
         {
             UnreferencedParameter(unused);
             var elem = this.Doc.Descendants(parentelementname);
-#if NO_ARRAY_EMPTY
+#if NET40 || NET45 || NET451 || NET452
             var strarray = new string[] { };
 #else
             var strarray = Array.Empty<string>();
@@ -630,7 +642,7 @@ namespace XmlAbstraction
             {
                 if (!this.ElementsAdded.ContainsKey(parentelementname))
                 {
-                    throw new ArgumentException("The parrent element trying to be read does not exist.");
+                    throw new ArgumentException(Resources.XmlObject_Parrent_Element_Does_Not_Exist);
                 }
                 else
                 {
@@ -643,7 +655,7 @@ namespace XmlAbstraction
                     strarray = elemValues.ToArray();
                     if (!elemValues.Any())
                     {
-                        throw new ArgumentException("The subelement trying to be read does not exist.");
+                        throw new ArgumentException(Resources.XmlObject_Subelement_Does_Not_Exist);
                     }
                 }
             }
@@ -730,7 +742,7 @@ namespace XmlAbstraction
                     this.Write(parentelementname, string.Empty);
                 }
 
-#if NO_ARRAY_EMPTY
+#if NET40 || NET45 || NET451 || NET452
                 return new string[] { };
 #else
                 return Array.Empty<string>();
@@ -749,7 +761,7 @@ namespace XmlAbstraction
         {
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
             else
             {
@@ -768,7 +780,7 @@ namespace XmlAbstraction
                 }
                 else
                 {
-                    throw new ArgumentException("elementname does not exist in the xml, in pending edits, or was already deleted.");
+                    throw new ArgumentException(Resources.XmlObject_Element_Already_Deleted);
                 }
 
                 this.HasChanged = true;
@@ -786,7 +798,7 @@ namespace XmlAbstraction
         {
             if (this.CachedXmlfilename.Equals(":memory", StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("This instance is read-only.");
+                throw new InvalidOperationException(Resources.XmlObject_Instance_Read_Only);
             }
             else
             {
@@ -829,7 +841,7 @@ namespace XmlAbstraction
                 }
                 else
                 {
-                    throw new ArgumentException("elementname or attributename does not exist in the xml, in pending edits, or was already deleted.");
+                    throw new ArgumentException(Resources.XmlObject_Element_Or_Attribute_Already_Deleted);
                 }
 
                 this.HasChanged = true;
