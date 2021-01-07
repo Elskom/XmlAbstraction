@@ -6,6 +6,8 @@
 ![Build Status](https://github.com/AraHaan/XmlAbstraction/workflows/.NET%20Core%20%28build%20pull%20request%29/badge.svg)
 [![codecov](https://codecov.io/gh/AraHaan/XmlAbstraction/branch/master/graph/badge.svg)](https://codecov.io/gh/AraHaan/XmlAbstraction)
 
+Merged into https://github.com/Elskom/Sdk/
+
 A library that contains a System.Xml and System.Xml.Linq abstraction class.
 
 # Contributions
