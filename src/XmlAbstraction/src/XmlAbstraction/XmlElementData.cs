@@ -11,7 +11,7 @@ namespace XmlAbstraction
     {
         internal string Name { get; set; } = string.Empty;
 
-        internal List<XmlElementData> Subelements { get; set; } = null;
+        internal List<XmlElementData> Subelements { get; set; }
 
         internal List<XmlAttributeData> Attributes { get; set; } = new List<XmlAttributeData>();
 
